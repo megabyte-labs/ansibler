@@ -2,9 +2,9 @@
 
 Ansibler should support the following parameters:
 
-**--generate-compatibility-chart** - (e.g. `ansibler --generate-compatibility-chart`) This command should generate a file called `molecule.json`.
-**--populate-platforms** - (e.g. `ansibler --populate-platforms`) This command should populate the platforms variable in the `galaxy_info` of `meta/main.yml`. If `meta/main.yml` then output an error message that says `meta/main.yml` is missing.
-**--role-dependencies** - (e.g. `ansibler --role-dependencies`) This command should generate a chart with useful information about the dependencies of the role/playbook.
+* **--generate-compatibility-chart** - (e.g. `ansibler --generate-compatibility-chart`) This command should generate a piece of data stored in `package.json` under `blueprint.compatibility` that details the supported OSes.
+* **--populate-platforms** - (e.g. `ansibler --populate-platforms`) This command should populate the platforms variable in the `galaxy_info` of `meta/main.yml`. If `meta/main.yml` is missing then output an error message that says `meta/main.yml` is missing.
+* **--role-dependencies** - (e.g. `ansibler --role-dependencies`) This command should generate a chart with useful information about the dependencies of the role/playbook.
 
 ## Generating the Compatibility Chart
 
