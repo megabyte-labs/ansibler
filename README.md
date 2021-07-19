@@ -166,6 +166,8 @@ collections:
 
 5. In the JSON above, you will see that the `Role Dependency` column uses a link in the form of `https://galaxy.ansible.com/{{ galaxy_info.namespace }}/{{ galaxy_info.role_name }}` with the text anchor as `{{ galaxy_info.namespace }}.{{ galaxy_info.role_name }}`. The description column is simply the text from `{{ galaxy_info.description }}`. The next column lists an array of icons that correlate to the operating systems that the role supports. These columns should be determined by looking at `{{ galaxy_info.platforms }}` (See the Icons section below for more details). Finally, the last `Status` column has a link in the form of `{{ galaxy_info.repository }}` and an image of `{{ galaxy_info.repository_status }}`. For the last column, if the `repository` field is unavailable then simply show the img. And if the `repository_status` is unavailable then replace the entire cell with 'Unavailable' text.
 
+**The role_dependencies variable should be saved to `blueprint.role_dependencies` in package.json**
+
 ### Role Dependency Chart Icons
 
 The third column in the `role_dependencies` chart displays icons that correlate to the platforms that are supported by the role. These icons should be determined by looking at the `{{ galaxy_info.platforms }}` variable. If there is an entry that says `Fedora` then the Fedora icon should show up. If there is a platform that says EL (which stands for Enterprise Linux) then the CentOS icon should show up. Here are the icons/platform names:
