@@ -63,7 +63,7 @@ And will ultimately be included in the README.md in the following format:
 | Ubuntu    | focal      | ✅     | ❌          | February 5th, 2009 |
 | Windows   | 10         | ✅     | ✅          | January 6th, 2020  |
 
-With the chart above, the platforms in galaxy_info (located in `meta/main.yml`) should be:
+With the chart above, the platforms in galaxy_info (located in `meta/main.yml`) should be (NOTE: Fedora is missing):
 
 ```
   platforms:
