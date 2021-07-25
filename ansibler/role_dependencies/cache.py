@@ -1,49 +1,35 @@
-import re
 import json
+from json.decoder import JSONDecodeError
+from pathlib import Path
 from typing import Any, Dict, List
 import yaml
 from yaml.loader import SafeLoader
-from ansibler.utils.subprocesses import get_subprocess_output
 from ansibler.utils.files import create_folder_if_not_exists, list_files
-from ansibler.exceptions.ansibler import (
-    CommandNotFound, RolesParseError, MetaYMLError
-)
+from ansibler.exceptions.ansibler import MetaYMLError
+from ansibler.utils.files import create_folder_if_not_exists
+from ansibler.role_dependencies.role_info import get_role_name
 
 
-ROLES_PATTERN = r"\[.*\]"
 META_FILES_PATTERN = "**/meta/main.yml"
-CACHE_MAP_DIR = "~/.local/megabytelabs/ansibler/"
+CACHE_MAP_DIR = str(Path.home()) + "/.local/megabytelabs/ansibler/"
 CACHE_MAP_FILE = "role_metadata"
 
 
-def generate_role_dependency_chart() -> None:
-    pass
+def read_roles_metadata_from_cache() -> Dict[str, Any]:
+    # TODO: TESTS
+    try:
+        cache = None
+        with open(CACHE_MAP_DIR + CACHE_MAP_FILE) as f:
+            cache = json.load(f)
+        print(f"Read cache from {CACHE_MAP_DIR}{CACHE_MAP_FILE}")
+    except (FileNotFoundError, JSONDecodeError):
+        pass
+
+    return cache
 
 
-def get_default_roles() -> str:
-    # Get default roles
-    bash_cmd = ["ansible-config", "dump", "|", "grep", "DEFAULT_ROLES_PATH"]
-    default_roles = get_subprocess_output(bash_cmd)
-
-    # Check if valid
-    if "DEFAULT_ROLES_PATH" not in default_roles:
-        raise CommandNotFound(f"Could not run {' '.join(bash_cmd)}")
-
-    return default_roles
-
-
-def parse_default_roles(default_roles: str) -> List[str]:
-    # Find list of roles
-    match = re.search(ROLES_PATTERN, default_roles)
-    if not match:
-        raise RolesParseError(f"Couldn't parse roles from: {default_roles}")
-
-    # Parse them
-    roles = match.group(0).strip("[").strip("]").replace("'", "").split(",")
-    return roles
-
-
-def cache_roles_metadata(roles_path: List[str]) -> None:
+def cache_roles_metadata(roles_path: List[str]) -> Dict[str, Any]:
+    # TODO: TESTS
     # Create cache folder if it does not exist
     create_folder_if_not_exists(CACHE_MAP_DIR)
 
@@ -63,36 +49,22 @@ def cache_roles_metadata(roles_path: List[str]) -> None:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
     print("Role metadata cached")
-
-
-def get_role_name(role_path: str, meta_file_path: str) -> str:
-    return meta_file_path \
-        .replace("meta/main.yml", "") \
-        .replace(role_path, "") \
-        .strip("/", "")
-
-
-def get_role_full_path(role_path: str, role_name: str) -> str:
-    if role_path.endswith("/"):
-        role_full_path = role_path
-    else:
-        role_full_path = role_path + "/"
-
-    role_full_path += role_name
-
-    return role_full_path
+    return cache
 
 
 def cache_single_role_metadata(
     meta_file_path: str, role_path: str, role_name: str, cache: Dict[str, Any]
 ) -> None:
+    # TODO: TESTS
+    # Read and parse meta/main.yml
     data = {}
-
     with open(meta_file_path) as f:
         data = yaml.load(f, Loader=SafeLoader)
 
-    # Build cache map for this single role
+    # Read galaxy_info
     galaxy_info = data.get("galaxy_info", None)
+
+    # Raise exceptions if invalid meta/main.yml
     if not galaxy_info:
         raise MetaYMLError(f"Invalid meta/main.yml in: {role_path}/{role_name}")
 
@@ -101,10 +73,15 @@ def cache_single_role_metadata(
         "description" not in galaxy_info:
         raise MetaYMLError(f"Invalid meta/main.yml in: {role_path}/{role_name}")
 
+    # Build cache map for this single role
     metadata = {
         "role_name": galaxy_info.get("role_name"),
         "namespace": galaxy_info.get("author"),
         "description": galaxy_info.get("description"),
+        "platforms": galaxy_info.get("platforms", []),
+        "repository": galaxy_info.get("repository", None),
+        "repository_status": galaxy_info.get("repository_status", None)
     }
 
-    cache[role_path][role_name] = metadata
+    # Append to cache
+    cache[role_name] = metadata

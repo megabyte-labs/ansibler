@@ -15,6 +15,17 @@ def create_folder_if_not_exists(path: str) -> None:
     pathlib.Path(path).mkdir(parents=True, exist_ok=True)
 
 
+def create_file_if_not_exists(path: str) -> None:
+    """
+    Creates file if it does not exist.
+
+    Args:
+        path (str): file path
+    """
+    # TODO: TESTS
+    pathlib.Path(path).touch(exist_ok=True)
+
+
 def check_folder_exists(path: str) -> bool:
     """
     Checks if a directory exists
@@ -23,15 +34,29 @@ def check_folder_exists(path: str) -> bool:
         path (str): dir
 
     Returns:
-        bool: [description]
+        bool: exists
     """
     return pathlib.Path(path).is_dir()
+
+
+def check_file_exists(path: str) -> bool:
+    """
+    Checks if a file exists
+
+    Args:
+        path (str): file path
+
+    Returns:
+        bool: exists
+    """
+    # TODO: TESTS
+    return pathlib.Path(path).is_file()
 
 
 def list_files(
     path: str,
     pattern: Optional[str] = "*",
-    full_filepath: Optional[bool] = False
+    absolute_path: Optional[bool] = False
 ) -> List[Tuple[str, datetime]]:
     """
     Lists files in a directory and returns name, datetime
@@ -39,8 +64,8 @@ def list_files(
     Args:
         path (str): dir
         pattern (str): only match files that satisfy this pattern
-        full_filepath (bool): indicates whether returned paths should include
-        parent dirs. When it's equal to True, the file name is returned.
+        absolute_path (bool): indicates whether returned paths should be
+        absolute. When it's equal to False, only the file name is returned.
 
     Returns:
         (List[Tuple[str, date]]): list of file (name, date)
@@ -48,7 +73,7 @@ def list_files(
     p = pathlib.Path(path).glob(pattern)
     return [
         (
-            x.name if not full_filepath else str(x),
+            x.name if not absolute_path else str(x.resolve()),
             datetime.fromtimestamp(x.stat().st_ctime)
         )
         for x in p
@@ -67,7 +92,14 @@ def copy_file(
     create_folder_if_not_exists(parent_dir)
 
     # Copy file
-    shutil.copy(src, destination)
+    try:
+        shutil.copy(src, destination)
+    except shutil.SameFileError as e:
+        # If content is to be overwritten, ignore SameFileError
+        if new_content:
+            pass
+        else:
+            raise e
 
     # Overwrite content if necessary
     if new_content:

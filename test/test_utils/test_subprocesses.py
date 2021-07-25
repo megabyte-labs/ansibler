@@ -9,3 +9,10 @@ class TestSubprocesses(TestCase):
         """
         out = get_subprocess_output(["echo", "Hello, world!"])
         self.assertEqual(out, "Hello, world!")
+
+    def test_filter_subprocess_output(self):
+        """
+        Test grep subprocess output
+        """
+        out = get_subprocess_output(("echo", "-e", "Hello\nWorld"), "World")
+        self.assertEqual(out, "World")

@@ -1,5 +1,7 @@
 from ansibler.args.cmd import get_user_arguments
-from ansibler.options.role_dependencies import generate_role_dependency_chart
+from ansibler.role_dependencies.dependencies import (
+    generate_role_dependency_chart
+)
 from ansibler.utils.help import display_help
 
 
