@@ -1,4 +1,4 @@
-class BaseException(Exception):
+class BaseAnsiblerException(Exception):
     message = "Error"
 
     def __init__(self, *args, **kwargs) -> None:
@@ -9,13 +9,17 @@ class BaseException(Exception):
         return self.message
 
 
-class CommandNotFound(BaseException):
+class CommandNotFound(BaseAnsiblerException):
     message = "Command not found"
 
 
-class RolesParseError(BaseException):
+class RolesParseError(BaseAnsiblerException):
     message = "Could not parse default roles"
 
 
-class MetaYMLError(BaseException):
+class MetaYMLError(BaseAnsiblerException):
     message = "Invalid meta/main.yml"
+
+
+class RoleMetadataError(BaseAnsiblerException):
+    message = "Role metadata error"
