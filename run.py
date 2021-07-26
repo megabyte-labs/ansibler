@@ -1,4 +1,5 @@
 from ansibler.args.cmd import get_user_arguments
+from ansibler.platforms.populate import populate_platforms
 from ansibler.role_dependencies.dependencies import (
     generate_role_dependency_chart
 )
@@ -25,7 +26,7 @@ def run_ansibler() -> None:
     if "generate-compatibility-chart" in args:
         print("Not working yet")
     elif "populate-platforms" in args:
-        print("Not working yet")
+        populate_platforms()
     elif "role-dependencies" in args:
         generate_role_dependency_chart()
     else:
