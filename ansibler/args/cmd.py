@@ -18,6 +18,11 @@ ARGS = [
         "arg_help": "Role dependencies",
         "arg_action": "store_true"
     },
+    {
+        "arg_name": "clear-cache",
+        "arg_help": "Clears ansibler cache",
+        "arg_action": "store_true"
+    },
     { "arg_name": "version", "arg_help": "project version" },
 ]
 

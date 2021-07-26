@@ -85,3 +85,23 @@ def cache_single_role_metadata(
 
     # Append to cache
     cache[role_name] = metadata
+
+
+def append_role_to_cache(
+    role_name: str, metadata: str, cache: Dict[str, Any]
+) -> None:
+    # TODO: TESTS
+    # Append to cache
+    cache[role_name] = metadata
+
+    # Rewrite cache
+    with open(CACHE_MAP_DIR + CACHE_MAP_FILE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False, indent=2)
+
+
+def clear_cache() -> None:
+    """
+    Clears ansibler cache
+    """
+    # TODO: TESTS
+    Path(CACHE_MAP_DIR + CACHE_MAP_FILE).unlink(missing_ok=True)
