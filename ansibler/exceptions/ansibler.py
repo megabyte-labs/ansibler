@@ -23,3 +23,11 @@ class MetaYMLError(BaseAnsiblerException):
 
 class RoleMetadataError(BaseAnsiblerException):
     message = "Role metadata error"
+
+
+class MoleculeTestsNotFound(BaseAnsiblerException):
+    message = "Molecule tests not foound"
+
+
+class MoleculeTestParseError(BaseAnsiblerException):
+    message = "Could not parse molecule test file"

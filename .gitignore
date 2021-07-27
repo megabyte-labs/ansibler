@@ -7,3 +7,4 @@ venv/
 
 # Test cases
 blueprint.compatibility/
+molecule-results/

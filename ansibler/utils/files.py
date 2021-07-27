@@ -87,6 +87,18 @@ def copy_file(
     new_content: Optional[str] = None,
     is_json: Optional[bool] = False
 ) -> None:
+    """
+    Copies file, optionally adds new content.
+
+    Args:
+        src (str): src file
+        destination (str): destination file
+        new_content (str, optional): new content - defaults to None.
+        is_json (bool, optional): json file? - defaults to False.
+
+    Raises:
+        shutil.SameFileError: raised when src and destination are the same file
+    """
     # Create destination folder if it doesnt exist
     parent_dir = pathlib.Path(destination).parents[0]
     create_folder_if_not_exists(parent_dir)
