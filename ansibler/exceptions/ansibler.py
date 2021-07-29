@@ -31,3 +31,7 @@ class MoleculeTestsNotFound(BaseAnsiblerException):
 
 class MoleculeTestParseError(BaseAnsiblerException):
     message = "Could not parse molecule test file"
+
+
+class NoPackageJsonError(BaseAnsiblerException):
+    message = "No package.json"

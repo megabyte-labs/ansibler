@@ -275,6 +275,8 @@ def get_role_dependency_supported_oses(metadata: Dict[str, Any]) -> str:
             img += "ubuntu.png"
         elif "windows" in name:
             img += "windows.png"
+        elif "generic" in name:
+            img += "linux.png"
         else:
             raise ValueError(f"Could not find icon for platform {name}")
 
