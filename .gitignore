@@ -5,6 +5,14 @@ __pycache__/
 # Virtual env
 venv/
 
-# Test cases
+# Test files
 blueprint.compatibility/
 molecule-results/
+package.json*
+
+# Test scripts
+test-install.sh
+
+# Builds
+dist/
+*.egg-info/
