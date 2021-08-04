@@ -1,7 +1,7 @@
 import json
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import yaml
 from yaml.loader import SafeLoader
 from ansibler.utils.files import create_folder_if_not_exists, list_files
@@ -21,6 +21,8 @@ def read_roles_metadata_from_cache() -> Dict[str, Any]:
         cache = None
         with open(CACHE_MAP_DIR + CACHE_MAP_FILE) as f:
             cache = json.load(f)
+        if not cache:
+            return None
         print(f"Read cache from {CACHE_MAP_DIR}{CACHE_MAP_FILE}")
     except (FileNotFoundError, JSONDecodeError):
         pass
@@ -28,12 +30,15 @@ def read_roles_metadata_from_cache() -> Dict[str, Any]:
     return cache
 
 
-def cache_roles_metadata(roles_path: List[str]) -> Dict[str, Any]:
+def cache_roles_metadata(
+    roles_path: List[str],
+    current_cache: Optional[Dict[str, Any]] = {}
+) -> Dict[str, Any]:
     # TODO: TESTS
     # Create cache folder if it does not exist
     create_folder_if_not_exists(CACHE_MAP_DIR)
 
-    cache = {}
+    cache = {**current_cache}
 
     for role_path in roles_path:
         meta_files = list_files(role_path, META_FILES_PATTERN, True)

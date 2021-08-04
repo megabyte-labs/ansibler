@@ -29,6 +29,7 @@ def generate_role_dependency_chart() -> None:
     """
     # TODO: TESTS
     role_paths = parse_default_roles(get_default_roles())
+    role_paths.append("./")
 
     # Read cache
     cache = read_roles_metadata_from_cache()
@@ -36,6 +37,8 @@ def generate_role_dependency_chart() -> None:
     # Generate cache if necessary
     if cache is None:
         cache = cache_roles_metadata(role_paths)
+    else:
+        cache = cache_roles_metadata(role_paths, cache)
 
     for role_path in role_paths:
         files = list_files(role_path, "**/package.json", True)
@@ -144,7 +147,10 @@ def generate_single_role_dependency_chart(
         role_dependencies.append(
             get_dependency_metadata(dependency_metadata))
 
-    role_path = role_base_path + "/" + role_name + "/"
+    if role_base_path.startswith("./"):
+        role_path = "/" + role_base_path + "/" + role_name + "/"
+    else:
+        role_path = role_base_path + "/" + role_name + "/"
 
     data = {}
     package_json_file = role_path + "package.json"
@@ -164,7 +170,7 @@ def generate_single_role_dependency_chart(
     data["blueprint"] = blueprint
 
     copy_file(package_json_file, new_package_json_file, json.dumps(data), True)
-    print(f"\tGenerated role dependency chart for {role_name}!")
+    print(f"\tGenerated role dependency chart for {role_name}")
 
 
 def read_dependencies(requirements_file_path: str) -> List[str]:

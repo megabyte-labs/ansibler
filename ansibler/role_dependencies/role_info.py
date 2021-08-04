@@ -12,7 +12,7 @@ def get_role_name(role_path: str, meta_file_path: str) -> str:
     return meta_file_path \
         .replace("meta/main.yml", "") \
         .replace(role_path, "") \
-        .strip("/")
+        .strip("/").split("/")[-1]
 
 
 def get_role_name_from_req_file(base_path: str, req_file_path: str) -> str:
