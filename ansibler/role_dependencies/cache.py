@@ -2,8 +2,7 @@ import json
 from json.decoder import JSONDecodeError
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-import yaml
-from yaml.loader import SafeLoader
+from ruamel.yaml import YAML
 from ansibler.utils.files import create_folder_if_not_exists, list_files
 from ansibler.exceptions.ansibler import MetaYMLError
 from ansibler.utils.files import create_folder_if_not_exists
@@ -64,7 +63,8 @@ def cache_single_role_metadata(
     # Read and parse meta/main.yml
     data = {}
     with open(meta_file_path) as f:
-        data = yaml.load(f, Loader=SafeLoader)
+        yaml = YAML()
+        data = yaml.load(f)
 
     # Read galaxy_info
     galaxy_info = data.get("galaxy_info", None)

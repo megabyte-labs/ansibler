@@ -19,6 +19,16 @@ ARGS = [
         "arg_action": "store_true"
     },
     {
+        "arg_name": "molecule-results-dir",
+        "arg_help": "Molecule results directory " \
+                    "(works for --generate-compatibility-chart only)"
+    },
+    {
+        "arg_name": "inline-replace",
+        "arg_help": "Overwrite files with the ansibler generated output",
+        "arg_action": "store_true"
+    },
+    {
         "arg_name": "clear-cache",
         "arg_help": "Clears ansibler cache",
         "arg_action": "store_true"
@@ -46,7 +56,7 @@ def configure_parser() -> ArgumentParser:
     Returns:
         argparse.ArgumentParser: parser
     """
-    parser = ArgumentParser()
+    parser = ArgumentParser(allow_abbrev=False)
 
     for arg in ARGS:
         validate_arg(arg)

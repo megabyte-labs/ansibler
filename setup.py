@@ -22,7 +22,7 @@ setup(
         f"{ARCHIVE}",
     keywords=["ANSIBLE", "DEPENDENCY", "ROLE", "MOLECULE", "CHARTS", "TEST"],
     install_requires=[
-        "PyYAML"
+        "ruamel.yaml"
     ],
     include_package_data=True,
     entry_points={

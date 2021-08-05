@@ -1,9 +1,8 @@
 import re
 import json
 from json.decoder import JSONDecodeError
-from typing import Any, Dict, List
-import yaml
-from yaml.loader import SafeLoader
+from typing import Any, Dict, List, Optional
+from ruamel.yaml import YAML
 from ansibler.utils.subprocesses import get_subprocess_output
 from ansibler.role_dependencies.role_info import get_role_name_from_req_file
 from ansibler.role_dependencies.galaxy import get_from_ansible_galaxy
@@ -12,7 +11,9 @@ from ansibler.role_dependencies.cache import (
     read_roles_metadata_from_cache, cache_roles_metadata, append_role_to_cache
 )
 from ansibler.utils.files import (
+    check_folder_exists,
     create_folder_if_not_exists,
+    check_file_exists,
     list_files,
     copy_file,
     check_file_exists,
@@ -23,7 +24,9 @@ from ansibler.utils.files import (
 ROLES_PATTERN = r"\[.*\]"
 
 
-def generate_role_dependency_chart() -> None:
+def generate_role_dependency_chart(
+    inline_replace: Optional[bool] = False
+) -> None:
     """
     Generates role dependency charts. Uses caches whenever possible.
     """
@@ -43,12 +46,15 @@ def generate_role_dependency_chart() -> None:
     for role_path in role_paths:
         files = list_files(role_path, "**/package.json", True)
         for f in files:
+            if not is_ansible_dir(f[0].replace("package.json", "")):
+                continue
+
             req_file = f[0].replace("package.json", "requirements.yml")
             role_name = get_role_name_from_req_file(role_path, req_file)
 
             try:
                 generate_single_role_dependency_chart(
-                    req_file, role_path, cache)
+                    req_file, role_path, cache, inline_replace=inline_replace)
             except ValueError as e:
                 print(
                     f"\tCouldnt generate dependency chart for {role_name}: {e}")
@@ -100,10 +106,28 @@ def parse_default_roles(default_roles: str) -> List[str]:
     return [role.strip() for role in roles]
 
 
+def is_ansible_dir(directory: str) -> bool:
+    """
+    Checks if dir is an ansible playbook or role.
+
+    Args:
+        directory (str): dir to check
+
+    Returns:
+        bool: whether an ansible playbook or role
+    """
+    return any((
+        check_file_exists(directory + "meta/main.yml"),
+        check_file_exists(directory + "requirements.yml"),
+        check_folder_exists(directory + "molecule/")
+    ))
+
+
 def generate_single_role_dependency_chart(
     requirement_file: str,
     role_base_path: str,
-    cache: Dict[str, Any]
+    cache: Dict[str, Any],
+    inline_replace: Optional[bool] = False
 ) -> None:
     # TODO: TESTS
     # Get role's name
@@ -154,7 +178,10 @@ def generate_single_role_dependency_chart(
 
     data = {}
     package_json_file = role_path + "package.json"
-    new_package_json_file = package_json_file + ".ansibler"
+    if not inline_replace:
+        new_package_json_file = role_path + "package.ansibler.json"
+    else:
+        new_package_json_file = package_json_file
 
     if not check_file_exists(package_json_file):
         create_file_if_not_exists(package_json_file)
@@ -187,7 +214,8 @@ def read_dependencies(requirements_file_path: str) -> List[str]:
     data = {}
     try:
         with open(requirements_file_path) as f:
-            data = yaml.load(f, Loader=SafeLoader)
+            yaml = YAML()
+            data = yaml.load(f)
     except FileNotFoundError:
         return []
 
@@ -224,7 +252,7 @@ def get_role_dependency_link(metadata: Dict[str, Any]) -> str:
         raise ValueError(
             f"Can not generate dependency link for {namespace}.{role_name}")
     
-    return f"<a href=\"https://galaxy.ansible.com/{namespace}/{role_name}\"" \
+    return f"<a href=\"https://galaxy.ansible.com/{namespace}/{role_name}\" " \
            f"title=\"{namespace}.{role_name} on Ansible Galaxy\" target=\"_" \
            f"blank\">{namespace}.{role_name}</a>"
 
@@ -294,7 +322,8 @@ def get_role_dependency_supported_oses(metadata: Dict[str, Any]) -> str:
             supported_oses.append(
                 f"<img src=\"{img}\" target=\"_blank\" />")
 
-    return "".join(supported_oses)
+    supported_oses = "".join(supported_oses)
+    return supported_oses if supported_oses else "❔"
 
 
 def get_role_dependency_status(metadata: Dict[str, Any]) -> str:
@@ -313,7 +342,7 @@ def get_role_dependency_status(metadata: Dict[str, Any]) -> str:
     namespace = metadata.get("namespace", None)
 
     if not repository_status:
-        return "Unavailable"
+        return "❔"
 
     img = f"<img src=\"{repository_status}\" />"
     if not repository:

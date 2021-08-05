@@ -1,7 +1,7 @@
 from datetime import datetime
 import re
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from ansibler.utils.files import (
     check_file_exists, check_folder_exists, list_files, copy_file
 )
@@ -12,20 +12,26 @@ from ansibler.molecule_test.parse import parse_test
 
 
 MOLECULE_RESULTS_DIR = "./molecule-results/"
-FILTER_FILES_PATTERN = r"\d{4}-\d{2}-\d{2}-\w+.txt"
+FILTER_FILES_PATTERN = r"\d{4}-\d{2}-\d{2}-.*.txt"
 
 
-def generate_compatibility_chart() -> None:
+def generate_compatibility_chart(
+    molecule_results_dir: Optional[str] = None,
+    inline_replace: Optional[bool] = False
+) -> None:
+    if molecule_results_dir is None:
+        molecule_results_dir = MOLECULE_RESULTS_DIR
+
     # TODO: TESTS
-    # Check ./molecule-results/ and ./package.json exist
-    if not check_folder_exists(MOLECULE_RESULTS_DIR):
-        raise MoleculeTestsNotFound("Didn't find ./molecule-results folder")
+    # Check molecule-results dir and ./package.json exist
+    if not check_folder_exists(molecule_results_dir):
+        raise MoleculeTestsNotFound("Couldn't find molecule results dir")
 
     if not check_file_exists("./package.json"):
-        raise NoPackageJsonError("Could not find package.json in this dir")
+        raise NoPackageJsonError("Couldn't find package.json in this dir")
 
     # Get list of molecule test files
-    test_files = list_files(MOLECULE_RESULTS_DIR, absolute_path=True)
+    test_files = list_files(molecule_results_dir, absolute_path=True)
     test_files = [
         (file_name, file_date)
         for file_name, file_date in test_files
@@ -72,9 +78,10 @@ def generate_compatibility_chart() -> None:
 
     data["blueprint"] = blueprint
 
+    out = "./package.json" if inline_replace else "./package.ansibler.json"
+
     # Save
-    copy_file(
-        "./package.json", "./package.json.ansibler", json.dumps(data), True)
+    copy_file("./package.json", out, json.dumps(data), True)
     print("Done")
 
 

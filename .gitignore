@@ -7,8 +7,10 @@ venv/
 
 # Test files
 blueprint.compatibility/
-molecule-results/
-package.json*
+molecule*/
+meta/
+package.json
+package.*.json
 
 # Test scripts
 test-install.sh
