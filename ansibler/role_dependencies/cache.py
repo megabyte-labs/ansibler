@@ -46,8 +46,11 @@ def cache_roles_metadata(
             meta_file_path = meta_file[0]
             role_name = get_role_name(role_path, meta_file_path)
 
-            cache_single_role_metadata(
-                meta_file_path, role_path, role_name, cache)
+            try:
+                cache_single_role_metadata(
+                    meta_file_path, role_path, role_name, cache)
+            except:
+                pass
 
     with open(CACHE_MAP_DIR + CACHE_MAP_FILE, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
@@ -66,17 +69,28 @@ def cache_single_role_metadata(
         yaml = YAML()
         data = yaml.load(f)
 
+    err_msg = f"Invalid meta/main.yml in: {role_path}"
+    if not role_path.endswith("/"):
+        err_msg += "/"
+    err_msg += role_name
+
+    if data is None:
+        print(err_msg)
+        raise MetaYMLError(err_msg)
+
     # Read galaxy_info
-    galaxy_info = data.get("galaxy_info", None)
+    galaxy_info = data.get("galaxy_info", {})
 
     # Raise exceptions if invalid meta/main.yml
     if not galaxy_info:
-        raise MetaYMLError(f"Invalid meta/main.yml in: {role_path}/{role_name}")
+        print(err_msg)
+        raise MetaYMLError(err_msg)
 
     if "role_name" not in galaxy_info or \
         "author" not in galaxy_info or \
         "description" not in galaxy_info:
-        raise MetaYMLError(f"Invalid meta/main.yml in: {role_path}/{role_name}")
+        print(err_msg)
+        raise MetaYMLError(err_msg)
 
     # Build cache map for this single role
     metadata = {

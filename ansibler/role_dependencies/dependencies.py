@@ -6,7 +6,7 @@ from ruamel.yaml import YAML
 from ansibler.utils.subprocesses import get_subprocess_output
 from ansibler.role_dependencies.role_info import get_role_name_from_req_file
 from ansibler.role_dependencies.galaxy import get_from_ansible_galaxy
-from ansibler.exceptions.ansibler import CommandNotFound, RolesParseError
+from ansibler.exceptions.ansibler import CommandNotFound, MetaYMLError, RolesParseError
 from ansibler.role_dependencies.cache import (
     read_roles_metadata_from_cache, cache_roles_metadata, append_role_to_cache
 )
@@ -32,7 +32,8 @@ def generate_role_dependency_chart(
     """
     # TODO: TESTS
     role_paths = parse_default_roles(get_default_roles())
-    role_paths.append("./")
+    if not check_file_exists("./ansible.cfg"):
+        role_paths.append("./")
 
     # Read cache
     cache = read_roles_metadata_from_cache()
@@ -55,7 +56,7 @@ def generate_role_dependency_chart(
             try:
                 generate_single_role_dependency_chart(
                     req_file, role_path, cache, inline_replace=inline_replace)
-            except ValueError as e:
+            except (ValueError, MetaYMLError) as e:
                 print(
                     f"\tCouldnt generate dependency chart for {role_name}: {e}")
 

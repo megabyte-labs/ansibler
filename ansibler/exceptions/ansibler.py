@@ -3,10 +3,10 @@ class BaseAnsiblerException(Exception):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args)
-        self.message = kwargs.get("message", self.message)
+        self.__class__.message = kwargs.get("message", self.message)
 
     def __str__(self) -> str:
-        return self.message
+        return self.__class__.message
 
 
 class CommandNotFound(BaseAnsiblerException):
