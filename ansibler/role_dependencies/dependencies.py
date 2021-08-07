@@ -143,7 +143,7 @@ def generate_single_role_dependency_chart(
     # If there's at least one dependency, add headers
     if len(dependencies):
         role_dependencies.append([
-            "Role Dependency",
+            "Dependency",
             "Description",
             "Supported OSes",
             "Status"
@@ -227,6 +227,15 @@ def read_dependencies(requirements_file_path: str) -> List[str]:
 
 
 def get_dependency_metadata(dependency_metadata: Dict[str, Any]) -> List[str]:
+    """
+    Returns formatted dependency's metadata
+
+    Args:
+        dependency_metadata (Dict[str, Any]): metadata
+
+    Returns:
+        List[str]: formatted metadata
+    """
     # TODO: TESTS
     return [
         get_role_dependency_link(dependency_metadata),
@@ -253,9 +262,10 @@ def get_role_dependency_link(metadata: Dict[str, Any]) -> str:
         raise ValueError(
             f"Can not generate dependency link for {namespace}.{role_name}")
     
-    return f"<a href=\"https://galaxy.ansible.com/{namespace}/{role_name}\" " \
+    return f"<b>" \
+           f"<a href=\"https://galaxy.ansible.com/{namespace}/{role_name}\" " \
            f"title=\"{namespace}.{role_name} on Ansible Galaxy\" target=\"_" \
-           f"blank\">{namespace}.{role_name}</a>"
+           f"blank\">{namespace}.{role_name}</a></b>"
 
 
 def get_role_dependency_description(metadata: Dict[str, Any]) -> str:

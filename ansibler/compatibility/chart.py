@@ -140,12 +140,16 @@ def get_play_recap_summary(
     }
 
 
-def did_play_succeed(recap: Dict[str, Any]) -> bool:
+def did_play_succeed(
+    recap: Dict[str, Any],
+    idempotency_play: Optional[bool] = False
+) -> bool:
     """
     Checks if a play succeeded.
 
     Args:
         recap (Dict[str, Any]): play recap
+        idempotency_play (bool, optional): idempotence play? Defaults to False.
 
     Returns:
         bool: whether successful or not
@@ -153,7 +157,13 @@ def did_play_succeed(recap: Dict[str, Any]) -> bool:
     # TODO: TESTS
     ok = recap.get("ok", 0)
     failed = recap.get("failed", 0)
-    return ok > 0 and failed == 0
+    unreachable = recap.get("unreachable", 0)
+
+    if idempotency_play:
+        changed = recap.get("changed", 0)
+        return ok > 0 and not failed and not unreachable and not changed
+
+    return ok > 0 and failed == 0 and unreachable == 0
 
 
 def is_idempotent(
@@ -183,7 +193,7 @@ def is_idempotent(
         idp_os_version = result.get("os_version")
 
         if idp_os_name == recap_os_name and idp_os_version == recap_os_version:
-            return did_play_succeed(result)
+            return did_play_succeed(result, idempotency_play=True)
 
     return None
 
