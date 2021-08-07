@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual env
+venv/
+
+# Test files
+blueprint.compatibility/
+molecule*/
+meta/
+package.json
+package.*.json
+
+# Test scripts
+test-install.sh
+
+# Builds
+dist/
+*.egg-info/
