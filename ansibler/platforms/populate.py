@@ -1,19 +1,15 @@
 import json
-from sys import platform
 from typing import Any, Dict, List, Optional
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from ansibler.utils.files import create_folder_if_not_exists
 
 
-def populate_platforms(inline_replace: Optional[bool] = False) -> None:
+def populate_platforms(json_file: Optional[str] = "./ansibler.json") -> None:
     # TODO: TESTS
-    package_json_path = "./package.json"
-
     # Read from package.json
-    package = read_package_json(package_json_path)
-    blueprint = package.get("blueprint", {})
-    compatibility = blueprint.get("compatibility", [])
+    data = read_json_file(json_file)
+    compatibility = data.get("compatibility_matrix", [])
     compatibility = [] if len(compatibility) <= 1 else compatibility[1:]
 
     # Generate platforms value
@@ -21,12 +17,18 @@ def populate_platforms(inline_replace: Optional[bool] = False) -> None:
     for platform in compatibility:
         os = f"{platform[0]}-{platform[1]}"
         if platform[2] == "✅":
+            if platform[0].lower() == "windows":
+                version = "all"
+            elif platform[1].replace(".", "", 1).isnumeric():
+                version = float(platform[1])
+            else:
+                version = platform[1]
+
             platforms.append({
                 "name": platform[0],
-                "versions": [
-                    "all" if platform[0].lower() == "windows" else platform[1]
-                ]
+                "versions": [version]
             })
+
             supported.append(os)
         else:
             unsupported.append(os)
@@ -38,13 +40,14 @@ def populate_platforms(inline_replace: Optional[bool] = False) -> None:
     old_platforms = galaxy_info.get("platforms", [])
     platforms = merge_platforms(
         platforms, old_platforms, supported, unsupported)
+    platforms = join_platforms(platforms)
 
     galaxy_info["platforms"] = platforms if platforms else None
     meta_main["galaxy_info"] = galaxy_info
 
     # Save
     create_folder_if_not_exists("./meta/")
-    out = "./meta/main.yml" if inline_replace else "./meta/main.ansibler.yml"
+    out = "./meta/main.yml"
     with open(out, "w") as f:
         yaml = YAML()
         yaml.explicit_start = True
@@ -53,9 +56,9 @@ def populate_platforms(inline_replace: Optional[bool] = False) -> None:
     print("Done")
 
 
-def read_package_json(package_json_path: str) -> Dict[str, Any]:
+def read_json_file(json_file_path: str) -> Dict[str, Any]:
     # TODO: TESTS
-    with open(package_json_path) as f:
+    with open(json_file_path) as f:
         return json.load(f)
 
 
@@ -115,5 +118,40 @@ def merge_platforms(
                 if not added:
                     res.append({"name": name, "versions": [version]})
                     supported.append(os)
+
+    return res
+
+
+def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Joins platform versions.
+
+    Args:
+        platforms (List[Dict[str, Any]]): platforms
+
+    Returns:
+        List[Dict[str, Any]]: joined platforms
+    """
+    # TODO: TESTS
+    res = []
+    added_names = []
+
+    for platform in platforms:
+        name = platform.get("name")
+        versions = platform.get("versions", [])
+
+        if name not in added_names:
+            res.append({"name": name, "versions": versions})
+            added_names.append(name)
+        else:
+            for p in res:
+                added_platform_name = p.get("name")
+                added_versions = p.get("versions", [])
+                if added_platform_name == name:
+                    for version in versions:
+                        if version not in added_versions:
+                            added_versions.append(version)
+                            p["versions"] = sorted(
+                                added_versions, key=lambda x: str(x))
 
     return res

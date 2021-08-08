@@ -30,10 +30,10 @@ Say you have run `molecule test` and want to generate updated compatibility char
 
 1. Start by dumping the results of your test to `./.molecule-results/YEAR-MONTH-DAY-scenario_tag.txt`. You can do that by running: `PY_COLORS=0 molecule test > .molecule-results/2021-08-07-docker-snap.txt` (make sure to put PY_COLORS=0 at the beginning of the command so the colors are stripped).
 
-2. Then, simply run `ansibler --generate-compatibility-chart` and a new `package.ansibler.json` will be generated, which will just be a copy of your current package.json, but with the addition of your brand new compatibility chart under `blueprint.compatibility`. It will look something like this:
+2. Then, simply run `ansibler --generate-compatibility-chart` and a new `ansibler.json` will be generated, which will have your brand new compatibility chart under `compatibility_matrix`. It will look something like this:
 
 ```
-"compatibility": [
+"compatibility_matrix": [
     ["OS Family", "OS Version", "Status", "Idempotent", "Tested On"],
     ["Fedora", "33", "❌", "❌", "April 4th, 2006"],
     ["Ubuntu", "focal", "✅", "❌", "February 5th, 2009"],
@@ -49,24 +49,22 @@ Say you have run `molecule test` and want to generate updated compatibility char
 
 ---
 ### Populating Platforms
-You can also update your role's `meta/main.yml` so that `galaxy_info.platforms` matches the new `blueprint.compatibility` chart. Simply run the following:
+You can also update your role's `meta/main.yml` so that `galaxy_info.platforms` matches the new `compatibility_matrix` chart. Simply run the following:
 ```
 ansibler --populate-platforms
 ```
-
-*NOTE:* by default, Ansibler does not override `meta/main.yml`. Instead, it will create and write to a new file: `meta/main.ansibler.yml`.
 
 <br/>
 
 ---
 ### Role Dependency Charts
-Finally, you can also add dependency data to your role's `package.ansibler.json` file. Simply run:
+Finally, you can also add dependency data to your role's `ansibler.json` file. Simply run:
 
 ```
 ansibler --role-dependencies
 ```
 
-Ansibler reads your dependencies from `requirements.yml` and then builds an additional depencency chart, which will be added under `blueprint.role_dependencies` and will look something like the following:
+Ansibler reads your dependencies from `requirements.yml` and then builds an additional depencency chart, which will be added under `role_dependencies` and will look something like the following:
 
 ```
 {
@@ -105,10 +103,12 @@ Ansibler generates a cache file under `~/.local/megabytelabs/ansibler` - you can
 ansibler --clear-cache
 ```
 
-### Overwriting package.json and meta/main.yml
-By default, Ansibler does not overwrite your files. If you want it to overwrite either `package.json` or `meta/main.yml`, add `--inline-replace` when you use Ansibler. For example:
+### Overriding ansibler.json and meta/main.yml
+By default, Ansibler writes to (and reads from) `ansibler.json`. If you want to override this, add `--json-file` when you use Ansibler. For example:
 ```
-ansibler --populate-platforms --inline-replace
+ansibler --generate-compatibility-chart --json-file .example.json
+ansibler --populate-platforms --json-file .example.json
+ansibler --role-dependencies --json-file .example.json
 ```
 
 ### Help

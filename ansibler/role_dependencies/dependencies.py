@@ -1,3 +1,4 @@
+import os
 import re
 import json
 from json.decoder import JSONDecodeError
@@ -25,7 +26,7 @@ ROLES_PATTERN = r"\[.*\]"
 
 
 def generate_role_dependency_chart(
-    inline_replace: Optional[bool] = False
+    json_file: Optional[str] = "./ansibler.json"
 ) -> None:
     """
     Generates role dependency charts. Uses caches whenever possible.
@@ -54,8 +55,9 @@ def generate_role_dependency_chart(
             role_name = get_role_name_from_req_file(role_path, req_file)
 
             try:
+                json_basename = os.path.basename(json_file)
                 generate_single_role_dependency_chart(
-                    req_file, role_path, cache, inline_replace=inline_replace)
+                    req_file, role_path, cache, json_file=json_basename)
             except (ValueError, MetaYMLError) as e:
                 print(
                     f"\tCouldnt generate dependency chart for {role_name}: {e}")
@@ -128,7 +130,7 @@ def generate_single_role_dependency_chart(
     requirement_file: str,
     role_base_path: str,
     cache: Dict[str, Any],
-    inline_replace: Optional[bool] = False
+    json_file: Optional[str] = "ansibler.json"
 ) -> None:
     # TODO: TESTS
     # Get role's name
@@ -162,10 +164,7 @@ def generate_single_role_dependency_chart(
 
         # if not found locally, try getting from ansible-galaxy
         if not dependency_metadata:
-            print(
-                f"\tWARNING: Role {dep} not found locally, trying to get it " \
-                "from ansible-galaxy..."
-            )
+            print(f"\tReading dependency {dep} from ansible-galaxy")
             dependency_metadata = get_from_ansible_galaxy(dep)
             append_role_to_cache(dep_name, dependency_metadata, cache)
 
@@ -178,26 +177,23 @@ def generate_single_role_dependency_chart(
         role_path = role_base_path + "/" + role_name + "/"
 
     data = {}
-    package_json_file = role_path + "package.json"
-    if not inline_replace:
-        new_package_json_file = role_path + "package.ansibler.json"
-    else:
-        new_package_json_file = package_json_file
+    ansibler_json_file = role_path + json_file
 
-    if not check_file_exists(package_json_file):
-        create_file_if_not_exists(package_json_file)
+    if not check_file_exists(ansibler_json_file):
+        create_file_if_not_exists(ansibler_json_file)
 
     try:
-        with open(package_json_file) as f:
+        with open(ansibler_json_file) as f:
             data = json.load(f)
-    except JSONDecodeError:
+
+        if isinstance(data, list):
+            raise JSONDecodeError()
+    except (JSONDecodeError, FileNotFoundError):
         data = {}
 
-    blueprint = data.get("blueprint", {})
-    blueprint["role_dependencies"] = role_dependencies
-    data["blueprint"] = blueprint
+    data["role_dependencies"] = role_dependencies
 
-    copy_file(package_json_file, new_package_json_file, json.dumps(data), True)
+    copy_file(ansibler_json_file, ansibler_json_file, json.dumps(data), True)
     print(f"\tGenerated role dependency chart for {role_name}")
 
 
