@@ -22,8 +22,11 @@ def get_from_ansible_galaxy(role: str) -> Dict[str, Any]:
     # Search for description, raise error if role not found
     if "description" in out:
         description = out.replace("description:", "").strip()
+        if not description:
+            print(f"WARNING: Role {role} not found")
+            raise RoleMetadataError("Role not found")
     else:
-        raise RoleMetadataError(f"Role {role} not found")
+        raise RoleMetadataError("Role not found")
 
     # Extract data
     role_data = role.split(".")

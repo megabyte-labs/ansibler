@@ -24,9 +24,8 @@ ARGS = [
                     "(works for --generate-compatibility-chart only)"
     },
     {
-        "arg_name": "inline-replace",
-        "arg_help": "Overwrite files with the ansibler generated output",
-        "arg_action": "store_true"
+        "arg_name": "json-file",
+        "arg_help": "Overrides the JSON file used by default (ansibler.json)",
     },
     {
         "arg_name": "clear-cache",

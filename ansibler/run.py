@@ -24,17 +24,17 @@ def run_ansibler() -> None:
         clear_cache()
         print("Cache cleared")
 
-    inline_replace = args.get("inline-replace", False)
+    json_file = args.get("json-file", "./ansibler.json")
 
     # Run generate compatibility charts
     if "generate-compatibility-chart" in args:
         molecule_results_dir = args.get("molecule-results-dir")
         generate_compatibility_chart(
-            molecule_results_dir, inline_replace=inline_replace)
+            molecule_results_dir, json_file=json_file)
     elif "populate-platforms" in args:
-        populate_platforms(inline_replace=inline_replace)
+        populate_platforms(json_file=json_file)
     elif "role-dependencies" in args:
-        generate_role_dependency_chart(inline_replace=inline_replace)
+        generate_role_dependency_chart(json_file=json_file)
     else:
         display_help()
 

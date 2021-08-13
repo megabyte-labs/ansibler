@@ -1,12 +1,12 @@
+from json.decoder import JSONDecodeError
+import os
 from datetime import datetime
 import re
 import json
 from typing import Any, Dict, List, Optional, Tuple
-from ansibler.utils.files import (
-    check_file_exists, check_folder_exists, list_files, copy_file
-)
+from ansibler.utils.files import check_folder_exists, list_files
 from ansibler.exceptions.ansibler import (
-    MoleculeTestParseError, MoleculeTestsNotFound, NoPackageJsonError
+    MoleculeTestParseError, MoleculeTestsNotFound
 )
 from ansibler.molecule_test.parse import parse_test
 
@@ -17,24 +17,21 @@ FILTER_FILES_PATTERN = r"\d{4}-\d{2}-\d{2}-.*.txt"
 
 def generate_compatibility_chart(
     molecule_results_dir: Optional[str] = None,
-    inline_replace: Optional[bool] = False
+    json_file: Optional[str] = "./ansibler.json"
 ) -> None:
     if molecule_results_dir is None:
         molecule_results_dir = MOLECULE_RESULTS_DIR
 
     # TODO: TESTS
-    # Check molecule-results dir and ./package.json exist
+    # Check molecule-results dir exists
     if not check_folder_exists(molecule_results_dir):
         raise MoleculeTestsNotFound("Couldn't find molecule results dir")
-
-    if not check_file_exists("./package.json"):
-        raise NoPackageJsonError("Couldn't find package.json in this dir")
 
     # Get list of molecule test files
     test_files = list_files(molecule_results_dir, absolute_path=True)
     test_files = [
-        (file_name, file_date)
-        for file_name, file_date in test_files
+        (file_name, get_test_file_date(file_name))
+        for file_name, _ in test_files
         if re.search(FILTER_FILES_PATTERN, file_name)
     ]
 
@@ -68,21 +65,37 @@ def generate_compatibility_chart(
     # Add to blueprint.compatibility
     add_items_to_blueprint_compatibility(temp_compat, compat)
 
-    # Populate package.json
+    # Populate output file
     data = {}
-    with open("./package.json") as f:
-        data = json.load(f)
+    try:
+        with open(json_file) as f:
+            data = json.load(f)
 
-    blueprint = data.get("blueprint", {})
-    blueprint["compatibility"] = compat
+        if isinstance(data, list):
+            raise JSONDecodeError()
+    except (JSONDecodeError, FileNotFoundError):
+        data = {}
 
-    data["blueprint"] = blueprint
-
-    out = "./package.json" if inline_replace else "./package.ansibler.json"
+    data["compatibility_matrix"] = compat
 
     # Save
-    copy_file("./package.json", out, json.dumps(data), True)
+    with open(json_file, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
     print("Done")
+
+
+def get_test_file_date(test_file_name) -> datetime:
+    """
+    Extracts test date from its name.
+    Must be in the following format: YEAR-MONTH-DAY-etc.txt
+
+    Args:
+        test_file_name (str): test date
+    """
+    # TODO: TESTS
+    basename = os.path.basename(test_file_name)
+    return datetime.fromisoformat(basename[:10])
 
 
 def read_molecule_tests(
