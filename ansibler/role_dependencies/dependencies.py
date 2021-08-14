@@ -300,34 +300,44 @@ def get_role_dependency_supported_oses(metadata: Dict[str, Any]) -> str:
         name = str(platform.get("name", None)).lower()
 
         img = "https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/"
+        alt = ""
         if "arch" in name:
             img += "archlinux.png"
+            alt = "Arch"
         elif "centos" in name or "el" in name:
             img += "centos.png"
+            alt = "EL"
         elif "debian" in name:
             img += "debian.png"
+            alt = "Debian"
         elif "fedora" in name:
             img += "fedora.png"
+            alt = "Fedora"
         elif "freebsd" in name:
             img += "freebsd.png"
+            alt = "FreeBSD"
         elif "mac" in name:
             img += "macos.png"
+            alt = "MacOS"
         elif "ubuntu" in name:
             img += "ubuntu.png"
+            alt = "Ubuntu"
         elif "windows" in name:
             img += "windows.png"
+            alt = "Windows"
         elif "generic" in name:
             img += "linux.png"
+            alt = "GenericUNIX"
         else:
             raise ValueError(f"Could not find icon for platform {name}")
 
         if repository:
             supported_oses.append(
                 f"<img src=\"{img}\" href=\"{repository}#supported-operating" \
-                f"-systems\" target=\"_blank\" />")
+                f"-systems\" alt=\"{alt}\" />")
         else:
             supported_oses.append(
-                f"<img src=\"{img}\" target=\"_blank\" />")
+                f"<img src=\"{img}\" alt=\"{alt}\" />")
 
     supported_oses = "".join(supported_oses)
     return supported_oses if supported_oses else "❔"

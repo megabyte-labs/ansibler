@@ -1,5 +1,6 @@
 import json
-from typing import Any, Dict, List, Optional
+import math
+from typing import Any, Dict, List, Optional, Union
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from ansibler.utils.files import create_folder_if_not_exists
@@ -17,12 +18,7 @@ def populate_platforms(json_file: Optional[str] = "./ansibler.json") -> None:
     for platform in compatibility:
         os = f"{platform[0]}-{platform[1]}"
         if platform[2] == "✅":
-            if platform[0].lower() == "windows":
-                version = "all"
-            elif platform[1].replace(".", "", 1).isnumeric():
-                version = float(platform[1])
-            else:
-                version = platform[1]
+            version = get_formatted_os_version(platform[0], platform[1])
 
             platforms.append({
                 "name": platform[0],
@@ -103,7 +99,7 @@ def merge_platforms(
             continue
 
         for version in versions:
-            os = f"{name}-{version}"
+            os = f"{name}-{get_formatted_os_version(name, version)}"
             added = False
 
             if os not in unsupported and os not in supported:
@@ -111,12 +107,16 @@ def merge_platforms(
                     cur_name = current_platform.get("name")
                     if cur_name == name:
                         cur_versions = current_platform.get("versions", [])
-                        cur_versions.append(version)
+                        cur_versions.append(
+                            get_formatted_os_version(name, version))
                         supported.append(os)
                         added = True
 
                 if not added:
-                    res.append({"name": name, "versions": [version]})
+                    res.append({
+                        "name": name,
+                        "versions": [get_formatted_os_version(name, version)]
+                    })
                     supported.append(os)
 
     return res
@@ -141,7 +141,13 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         versions = platform.get("versions", [])
 
         if name not in added_names:
-            res.append({"name": name, "versions": versions})
+            res.append({
+                "name": name,
+                "versions": [
+                    get_formatted_os_version(name, v)
+                    for v in versions
+                ]
+            })
             added_names.append(name)
         else:
             for p in res:
@@ -150,8 +156,33 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                 if added_platform_name == name:
                     for version in versions:
                         if version not in added_versions:
-                            added_versions.append(version)
+                            added_versions.append(
+                                get_formatted_os_version(name, version))
                             p["versions"] = sorted(
                                 added_versions, key=lambda x: str(x))
 
     return res
+
+
+def get_formatted_os_version(os: str, version: str) -> Union[float, int, str]:
+    # TODO TESTS
+    if os.lower() == "windows":
+        return "all"
+    elif isinstance(version, str) and version.replace(".", "", 1).isnumeric():
+        if "." in version:
+            if int(version.split(".")[-1]) == 0:
+                return int(version.split(".")[0])
+            return float(version)
+        else:
+            return int(version)
+    elif isinstance(version, str) and \
+        not version.replace(".", "", 1).isnumeric():
+        return version
+    else:
+        version_ceil = math.ceil(float(version))
+        version_float = float(version)
+
+        if version_ceil == version_float:
+            return version_ceil
+
+        return version
