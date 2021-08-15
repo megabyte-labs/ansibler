@@ -1,4 +1,4 @@
-import sys
+import asyncio
 from ansibler.args.cmd import get_user_arguments
 from ansibler.compatibility.chart import generate_compatibility_chart
 from ansibler.platforms.populate import populate_platforms
@@ -34,7 +34,7 @@ def run_ansibler() -> None:
     elif "populate-platforms" in args:
         populate_platforms(json_file=json_file)
     elif "role-dependencies" in args:
-        generate_role_dependency_chart(json_file=json_file)
+        asyncio.run(generate_role_dependency_chart(json_file=json_file))
     else:
         display_help()
 
