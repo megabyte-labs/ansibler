@@ -33,8 +33,7 @@ async def generate_role_dependency_chart(
     """
     # TODO: TESTS
     role_paths = parse_default_roles(get_default_roles())
-    if not check_file_exists("./ansible.cfg"):
-        role_paths.append("./")
+    is_playbook = check_file_exists("./ansible.cfg")
 
     # Read cache
     cache = read_roles_metadata_from_cache()
@@ -45,15 +44,27 @@ async def generate_role_dependency_chart(
 
     tasks = []
 
-    paths = ["./"] if not check_file_exists("./ansible.cfg") else role_paths
+    paths = [os.path.abspath("./")] if not is_playbook else role_paths
     for role_path in paths:
-        files = list_files(role_path, "**/package.json", True)
+        if not check_folder_exists(role_path):
+            continue
+
+        if is_playbook:
+            files = list_files(role_path, "**/meta/main.yml", True)
+        else:
+            files = list_files(role_path, "meta/main.yml", True)
+            role_path = "/".join(role_path.split("/")[:-1])
+
+        # print("\n".join([f[0] for f in  files]))
         for f in files:
-            if not is_ansible_dir(f[0].replace("package.json", "")):
+            if not is_ansible_dir(f[0].replace("meta/main.yml", "")):
                 continue
 
-            req_file = f[0].replace("package.json", "requirements.yml")
-            role_name = get_role_name_from_req_file(role_path, req_file)
+            req_file = f[0].replace("meta/main.yml", "requirements.yml")
+            if is_playbook:
+                role_name = get_role_name_from_req_file(role_path, req_file)
+            else:
+                role_name = role_path.split("/")[-1]
 
             tasks.append(
                 asyncio.ensure_future(
