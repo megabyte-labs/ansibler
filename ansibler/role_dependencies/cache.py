@@ -55,7 +55,9 @@ def cache_roles_metadata(
     with open(CACHE_MAP_DIR + CACHE_MAP_FILE, "w", encoding="utf-8") as f:
         json.dump(cache, f, ensure_ascii=False, indent=2)
 
-    print("Role metadata cached")
+    if not current_cache:
+        print("Role metadata cached")
+
     return cache
 
 

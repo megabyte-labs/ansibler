@@ -1,8 +1,9 @@
 import os
 import re
 import json
+import asyncio
 from json.decoder import JSONDecodeError
-from typing import Any, Dict, List, Optional
+from typing import Any, Coroutine, Dict, List, Optional
 from ruamel.yaml import YAML
 from ansibler.utils.subprocesses import get_subprocess_output
 from ansibler.role_dependencies.role_info import get_role_name_from_req_file
@@ -13,7 +14,6 @@ from ansibler.role_dependencies.cache import (
 )
 from ansibler.utils.files import (
     check_folder_exists,
-    create_folder_if_not_exists,
     check_file_exists,
     list_files,
     copy_file,
@@ -25,16 +25,15 @@ from ansibler.utils.files import (
 ROLES_PATTERN = r"\[.*\]"
 
 
-def generate_role_dependency_chart(
+async def generate_role_dependency_chart(
     json_file: Optional[str] = "./ansibler.json"
-) -> None:
+) -> Coroutine[None, None, None]:
     """
     Generates role dependency charts. Uses caches whenever possible.
     """
     # TODO: TESTS
     role_paths = parse_default_roles(get_default_roles())
-    if not check_file_exists("./ansible.cfg"):
-        role_paths.append("./")
+    is_playbook = check_file_exists("./ansible.cfg")
 
     # Read cache
     cache = read_roles_metadata_from_cache()
@@ -42,26 +41,45 @@ def generate_role_dependency_chart(
     # Generate cache if necessary
     if cache is None:
         cache = cache_roles_metadata(role_paths)
-    else:
-        cache = cache_roles_metadata(role_paths, cache)
 
-    for role_path in role_paths:
-        files = list_files(role_path, "**/package.json", True)
+    tasks = []
+
+    paths = [os.path.abspath("./")] if not is_playbook else role_paths
+    for role_path in paths:
+        if not check_folder_exists(role_path):
+            continue
+
+        if is_playbook:
+            files = list_files(role_path, "**/meta/main.yml", True)
+        else:
+            files = list_files(role_path, "meta/main.yml", True)
+            role_path = "/".join(role_path.split("/")[:-1])
+
+        # print("\n".join([f[0] for f in  files]))
         for f in files:
-            if not is_ansible_dir(f[0].replace("package.json", "")):
+            if not is_ansible_dir(f[0].replace("meta/main.yml", "")):
                 continue
 
-            req_file = f[0].replace("package.json", "requirements.yml")
-            role_name = get_role_name_from_req_file(role_path, req_file)
+            req_file = f[0].replace("meta/main.yml", "requirements.yml")
+            if is_playbook:
+                role_name = get_role_name_from_req_file(role_path, req_file)
+            else:
+                role_name = role_path.split("/")[-1]
 
-            try:
-                json_basename = os.path.basename(json_file)
-                generate_single_role_dependency_chart(
-                    req_file, role_path, cache, json_file=json_basename)
-            except (ValueError, MetaYMLError) as e:
-                print(
-                    f"\tCouldnt generate dependency chart for {role_name}: {e}")
+            tasks.append(
+                asyncio.ensure_future(
+                    generate_single_role_dependency_chart(
+                        role_name,
+                        req_file,
+                        role_path,
+                        cache,
+                        os.path.basename(json_file),
+                        role_paths
+                    )
+                )
+            )
 
+    await asyncio.gather(*tasks)
     print("Done")
 
 
@@ -81,7 +99,7 @@ def get_default_roles() -> str:
 
     # Check if valid
     if not default_roles or "DEFAULT_ROLES_PATH" not in default_roles:
-        raise CommandNotFound(f"Could not run {' '.join(bash_cmd)}")
+        raise CommandNotFound("Could not run", " ".join(bash_cmd))
 
     return default_roles
 
@@ -121,17 +139,40 @@ def is_ansible_dir(directory: str) -> bool:
     """
     return any((
         check_file_exists(directory + "meta/main.yml"),
-        check_file_exists(directory + "requirements.yml"),
         check_folder_exists(directory + "molecule/")
     ))
 
 
-def generate_single_role_dependency_chart(
+async def generate_single_role_dependency_chart(
+    role_name: str,
     requirement_file: str,
     role_base_path: str,
     cache: Dict[str, Any],
-    json_file: Optional[str] = "ansibler.json"
-) -> None:
+    json_file: Optional[str] = "ansibler.json",
+    role_paths: Optional[str] = []
+) -> Coroutine[None, None, None]:
+    # TODO: TESTS
+    try:
+        json_basename = os.path.basename(json_file)
+        await role_dependency_chart(
+            requirement_file,
+            role_base_path,
+            cache,
+            json_file=json_basename,
+            role_paths=role_paths
+        )
+    except (ValueError, MetaYMLError) as e:
+        print(
+            f"\tCouldnt generate dependency chart for {role_name}: {e}")
+
+
+async def role_dependency_chart(
+    requirement_file: str,
+    role_base_path: str,
+    cache: Dict[str, Any],
+    json_file: Optional[str] = "ansibler.json",
+    role_paths: Optional[str] = []
+) -> Coroutine[None, None, None]:
     # TODO: TESTS
     # Get role's name
     role_name = get_role_name_from_req_file(role_base_path, requirement_file)
@@ -164,12 +205,28 @@ def generate_single_role_dependency_chart(
 
         # if not found locally, try getting from ansible-galaxy
         if not dependency_metadata:
+            if role_paths:
+                print(f"\tDoing full re-scan...")
+                new_cache = cache_roles_metadata(role_paths, cache)
+                return role_dependency_chart(
+                    requirement_file,
+                    role_base_path,
+                    new_cache,
+                    json_file=json_file
+                )
+
             print(f"\tReading dependency {dep} from ansible-galaxy")
             dependency_metadata = get_from_ansible_galaxy(dep)
             append_role_to_cache(dep_name, dependency_metadata, cache)
 
         role_dependencies.append(
-            get_dependency_metadata(dependency_metadata))
+            get_dependency_metadata(
+                dependency_metadata,
+                role_base_path \
+                    if role_base_path.endswith("/") \
+                    else role_base_path + "/" + role_name
+            )
+        )
 
     if role_base_path.startswith("./"):
         role_path = "/" + role_base_path + "/" + role_name + "/"
@@ -222,12 +279,16 @@ def read_dependencies(requirements_file_path: str) -> List[str]:
     return [role["name"] for role in data.get("roles", []) if "name" in role]
 
 
-def get_dependency_metadata(dependency_metadata: Dict[str, Any]) -> List[str]:
+def get_dependency_metadata(
+    dependency_metadata: Dict[str, Any],
+    role_base_path: str
+) -> List[str]:
     """
     Returns formatted dependency's metadata
 
     Args:
         dependency_metadata (Dict[str, Any]): metadata
+        role_base_path (str): role path
 
     Returns:
         List[str]: formatted metadata
@@ -237,7 +298,7 @@ def get_dependency_metadata(dependency_metadata: Dict[str, Any]) -> List[str]:
         get_role_dependency_link(dependency_metadata),
         get_role_dependency_description(dependency_metadata),
         get_role_dependency_supported_oses(dependency_metadata),
-        get_role_dependency_status(dependency_metadata)
+        get_role_dependency_status(dependency_metadata, role_base_path)
     ]
 
 
@@ -300,60 +361,83 @@ def get_role_dependency_supported_oses(metadata: Dict[str, Any]) -> str:
         name = str(platform.get("name", None)).lower()
 
         img = "https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/"
+        alt = ""
         if "arch" in name:
             img += "archlinux.png"
+            alt = "Arch"
         elif "centos" in name or "el" in name:
             img += "centos.png"
+            alt = "EL"
         elif "debian" in name:
             img += "debian.png"
+            alt = "Debian"
         elif "fedora" in name:
             img += "fedora.png"
+            alt = "Fedora"
         elif "freebsd" in name:
             img += "freebsd.png"
+            alt = "FreeBSD"
         elif "mac" in name:
             img += "macos.png"
+            alt = "MacOS"
         elif "ubuntu" in name:
             img += "ubuntu.png"
+            alt = "Ubuntu"
         elif "windows" in name:
             img += "windows.png"
+            alt = "Windows"
         elif "generic" in name:
             img += "linux.png"
+            alt = "GenericUNIX"
         else:
             raise ValueError(f"Could not find icon for platform {name}")
 
         if repository:
             supported_oses.append(
                 f"<img src=\"{img}\" href=\"{repository}#supported-operating" \
-                f"-systems\" target=\"_blank\" />")
+                f"-systems\" alt=\"{alt}\" />")
         else:
             supported_oses.append(
-                f"<img src=\"{img}\" target=\"_blank\" />")
+                f"<img src=\"{img}\" alt=\"{alt}\" />")
 
     supported_oses = "".join(supported_oses)
     return supported_oses if supported_oses else "❔"
 
 
-def get_role_dependency_status(metadata: Dict[str, Any]) -> str:
+def get_role_dependency_status(metadata: Dict[str, Any], role_path: str) -> str:
     """
     Returns role status
 
     Args:
         metadata (Dict[str, Any]): role metadata
+        role_path (str): role path
 
     Returns:
         str: role status
     """
-    repository_status = metadata.get("repository_status", None)
-    repository = metadata.get("repository", None)
+    # Looks for .variables.json
     role_name = metadata.get("role_name", None)
-    namespace = metadata.get("namespace", None)
+    if not role_path.endswith("/"):
+        variables_json = role_path + "/" + "variables.json"
+    else:
+        variables_json = role_path + "variables.json"
 
-    if not repository_status:
+    # Return question mark if it the file does not exist
+    if not role_name or not check_file_exists(variables_json):
         return "❔"
 
-    img = f"<img src=\"{repository_status}\" />"
-    if not repository:
-        return img
+    # Read variables json file
+    data = {}
+    try:
+        with open(variables_json) as f:
+            data = json.load(f)
+    except:
+        pass
 
-    return f"<a href=\"{repository}\" title=\"{namespace}.{role_name}'s repos" \
-           f"itory\" target=\"_blank\">{img}</a>"
+    status = data.get("role_dependencies_status_format", None)
+    if status is None:
+        return "❔"
+
+    # Replace {{ role_name }} ocurrences
+    status = status.replace(r"{{ role_name }}", role_name)
+    return status
