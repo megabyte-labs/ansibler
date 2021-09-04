@@ -1,8 +1,9 @@
-import pathlib
-import shutil
 import json
+import glob
+from pathlib import Path
+import shutil
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import AnyStr, List, Optional, Tuple, Union
 
 
 def create_folder_if_not_exists(path: str) -> None:
@@ -12,7 +13,7 @@ def create_folder_if_not_exists(path: str) -> None:
     Args:
         path (str): dir
     """
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    Path(path).mkdir(parents=True, exist_ok=True)
 
 
 def create_file_if_not_exists(path: str) -> None:
@@ -23,7 +24,7 @@ def create_file_if_not_exists(path: str) -> None:
         path (str): file path
     """
     # TODO: TESTS
-    pathlib.Path(path).touch(exist_ok=True)
+    Path(path).touch(exist_ok=True)
 
 
 def check_folder_exists(path: str) -> bool:
@@ -36,7 +37,7 @@ def check_folder_exists(path: str) -> bool:
     Returns:
         bool: exists
     """
-    return pathlib.Path(path).is_dir()
+    return Path(path).is_dir()
 
 
 def check_file_exists(path: str) -> bool:
@@ -50,7 +51,7 @@ def check_file_exists(path: str) -> bool:
         bool: exists
     """
     # TODO: TESTS
-    return pathlib.Path(path).is_file()
+    return Path(path).is_file()
 
 
 def list_files(
@@ -70,7 +71,7 @@ def list_files(
     Returns:
         (List[Tuple[str, date]]): list of file (name, date)
     """
-    p = pathlib.Path(path).glob(pattern)
+    p = Path(path).glob(pattern)
     return [
         (
             x.name if not absolute_path else str(x.resolve()),
@@ -100,7 +101,7 @@ def copy_file(
         shutil.SameFileError: raised when src and destination are the same file
     """
     # Create destination folder if it doesnt exist
-    parent_dir = pathlib.Path(destination).parents[0]
+    parent_dir = Path(destination).parents[0]
     create_folder_if_not_exists(parent_dir)
 
     # Copy file
@@ -121,3 +122,55 @@ def copy_file(
                     json.loads(new_content), f, ensure_ascii=False, indent=2)
             else:
                 f.write(new_content)
+
+
+def read_gitignore(gitignore_dir: Optional[str] = "./.gitignore") -> List[str]:
+    """
+    Read all files to ignore (from .gitignore)
+
+    Args:
+        gitignore_dir (str): gitignore's path. Defaults to './.gitignore'
+
+    Returns:
+        List[str]: files to ignore
+    """
+    files_to_ignore = []
+
+    if not check_file_exists(gitignore_dir):
+        return files_to_ignore
+
+    for p in Path(gitignore_dir).read_text().split("\n"):
+        if p and not p.startswith("#"):
+            walk_gitignore(p, files_to_ignore)
+
+    return files_to_ignore
+
+
+def walk_gitignore(p: Union[Path, str], files_to_ignore: List[str]) -> None:
+    """
+    Reads a gitignore entry and appends it to the files_to_ignore list. If it is
+    a directory, it will make sure to add all of their files and subdirs to the
+    list as well.
+
+    Args:
+        p (Union[Path, str]): 
+        files_to_ignore (List[str]): list of files
+    """
+    p_path = Path(p)
+
+    if p_path.is_file():
+        files_to_ignore.append(p_path.resolve())
+    elif p_path.is_dir():
+        if p.endswith("/") or p.endswith("\\"):
+            files_to_ignore.extend([
+                Path(to_ignore).resolve()
+                for to_ignore in glob.glob(p + "*")
+            ])
+        else:
+            files_to_ignore.extend([
+                Path(to_ignore).resolve()
+                for to_ignore in glob.glob(p + "/*")
+            ])
+    else:
+        for subdir in glob.glob(p):
+            walk_gitignore(subdir, files_to_ignore)
