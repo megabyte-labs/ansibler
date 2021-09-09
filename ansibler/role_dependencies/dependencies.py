@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 import json
 import asyncio
@@ -18,7 +19,8 @@ from ansibler.utils.files import (
     list_files,
     copy_file,
     check_file_exists,
-    create_file_if_not_exists
+    create_file_if_not_exists,
+    read_gitignore
 )
 
 
@@ -32,6 +34,7 @@ async def generate_role_dependency_chart(
     Generates role dependency charts. Uses caches whenever possible.
     """
     # TODO: TESTS
+    # Read role paths
     role_paths = parse_default_roles(get_default_roles())
     is_playbook = check_file_exists("./ansible.cfg")
 
@@ -42,6 +45,7 @@ async def generate_role_dependency_chart(
     if cache is None:
         cache = cache_roles_metadata(role_paths)
 
+    # Task pool
     tasks = []
 
     paths = [os.path.abspath("./")] if not is_playbook else role_paths
@@ -49,23 +53,34 @@ async def generate_role_dependency_chart(
         if not check_folder_exists(role_path):
             continue
 
+        # Read gitignore
+        files_to_ignore = read_gitignore(
+            pathlib.Path(role_path) / pathlib.Path(".gitignore"))
+
+        # List ansible dirs
         if is_playbook:
             files = list_files(role_path, "**/meta/main.yml", True)
         else:
             files = list_files(role_path, "meta/main.yml", True)
             role_path = "/".join(role_path.split("/")[:-1])
 
-        # print("\n".join([f[0] for f in  files]))
         for f in files:
+            # Skip if in gitignore
+            if pathlib.Path(f[0]) in files_to_ignore:
+                continue
+
+            # Make sure we're dealing with an ansible project (role or playbook)
             if not is_ansible_dir(f[0].replace("meta/main.yml", "")):
                 continue
 
+            # Get the role name
             req_file = f[0].replace("meta/main.yml", "requirements.yml")
             if is_playbook:
                 role_name = get_role_name_from_req_file(role_path, req_file)
             else:
                 role_name = role_path.split("/")[-1]
 
+            # Append task to the pool
             tasks.append(
                 asyncio.ensure_future(
                     generate_single_role_dependency_chart(
@@ -79,6 +94,7 @@ async def generate_role_dependency_chart(
                 )
             )
 
+    # Execute tasks
     await asyncio.gather(*tasks)
     print("Done")
 
