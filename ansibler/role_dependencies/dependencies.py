@@ -310,11 +310,17 @@ def get_dependency_metadata(
         List[str]: formatted metadata
     """
     # TODO: TESTS
+    supported = get_role_dependency_supported_oses(dependency_metadata)
+    supported = f"<center>{supported}</center>" if supported else supported
+
+    status = get_role_dependency_status(dependency_metadata, role_base_path)
+    status = f"<center>{status}</center>" if status else status
+
     return [
         get_role_dependency_link(dependency_metadata),
         get_role_dependency_description(dependency_metadata),
-        get_role_dependency_supported_oses(dependency_metadata),
-        get_role_dependency_status(dependency_metadata, role_base_path)
+        supported,
+        status
     ]
 
 

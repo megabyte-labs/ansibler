@@ -17,7 +17,7 @@ def populate_platforms(json_file: Optional[str] = "./ansibler.json") -> None:
     platforms, supported, unsupported = [], [], []
     for platform in compatibility:
         os = f"{platform[0]}-{platform[1]}"
-        if platform[2] == "✅":
+        if "✅" in platform[2]:
             version = get_formatted_os_version(platform[0], platform[1])
 
             platforms.append({
@@ -90,6 +90,9 @@ def merge_platforms(
     """
     # TODO: TESTS
     res = current_platforms[:]
+
+    if old_platforms is None:
+        old_platforms = []
 
     for old_platform in old_platforms:
         name = old_platform.get("name", None)

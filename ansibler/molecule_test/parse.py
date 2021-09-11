@@ -184,7 +184,32 @@ def parse_os(recap: str) -> Tuple[str, str]:
     os_data = m.group().split("-")
 
     if len(os_data) > 1:
-        return os_data[0], os_data[1].strip(":").strip()
+        os_name = os_data[0]
+
+        version = None
+        version_index = None
+
+        os_vers = os_data[1:]
+        for i, v in enumerate(os_vers):
+            if v.replace(".", "").isnumeric():
+                version = v
+                version_index = i
+                break
+
+        if version is None:
+            version_index = 0
+            version = os_vers[0]
+
+        codename = version if len(os_vers) <= 1 else f"{version} ("
+        remaining_text = []
+        for i, c in enumerate(os_vers):
+            if i != version_index:
+                remaining_text.append(c)
+
+        if len(remaining_text) >= 1:
+            codename += f"{' '.join(remaining_text).title()})"
+
+        return os_name, codename
 
     return os_data[0], None
 
