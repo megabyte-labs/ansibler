@@ -36,7 +36,8 @@ def run_ansibler() -> None:
     elif "role-dependencies" in args:
         asyncio.run(generate_role_dependency_chart(json_file=json_file))
     else:
-        display_help()
+        if "clear-cache" not in args:
+            display_help()
 
 
 if __name__ == "__main__":
