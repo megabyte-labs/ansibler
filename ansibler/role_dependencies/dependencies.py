@@ -28,7 +28,9 @@ ROLES_PATTERN = r"\[.*\]"
 
 
 async def generate_role_dependency_chart(
-    json_file: Optional[str] = "./ansibler.json"
+    json_file: Optional[str] = "./ansibler.json",
+    template: Optional[str] = None,
+    variables: Optional[str] = None
 ) -> Coroutine[None, None, None]:
     """
     Generates role dependency charts. Uses caches whenever possible.
@@ -89,7 +91,9 @@ async def generate_role_dependency_chart(
                         role_path,
                         cache,
                         os.path.basename(json_file),
-                        role_paths
+                        role_paths,
+                        template=template,
+                        variables=variables
                     )
                 )
             )
@@ -165,7 +169,9 @@ async def generate_single_role_dependency_chart(
     role_base_path: str,
     cache: Dict[str, Any],
     json_file: Optional[str] = "ansibler.json",
-    role_paths: Optional[str] = []
+    role_paths: Optional[str] = [],
+    template: Optional[str] = None,
+    variables: Optional[str] = None
 ) -> Coroutine[None, None, None]:
     # TODO: TESTS
     try:
@@ -175,7 +181,9 @@ async def generate_single_role_dependency_chart(
             role_base_path,
             cache,
             json_file=json_basename,
-            role_paths=role_paths
+            role_paths=role_paths,
+            template=template,
+            variables=variables
         )
     except (ValueError, MetaYMLError) as e:
         print(
@@ -187,7 +195,9 @@ async def role_dependency_chart(
     role_base_path: str,
     cache: Dict[str, Any],
     json_file: Optional[str] = "ansibler.json",
-    role_paths: Optional[str] = []
+    role_paths: Optional[str] = [],
+    template: Optional[str] = None,
+    variables: Optional[str] = None
 ) -> Coroutine[None, None, None]:
     # TODO: TESTS
     # Get role's name
@@ -240,7 +250,9 @@ async def role_dependency_chart(
                 dependency_metadata,
                 role_base_path \
                     if role_base_path.endswith("/") \
-                    else role_base_path + "/" + role_name
+                    else role_base_path + "/" + role_name,
+                template,
+                variables
             )
         )
 
@@ -297,7 +309,9 @@ def read_dependencies(requirements_file_path: str) -> List[str]:
 
 def get_dependency_metadata(
     dependency_metadata: Dict[str, Any],
-    role_base_path: str
+    role_base_path: str,
+    template: Optional[str] = None,
+    variables: Optional[str] = None
 ) -> List[str]:
     """
     Returns formatted dependency's metadata
@@ -305,6 +319,8 @@ def get_dependency_metadata(
     Args:
         dependency_metadata (Dict[str, Any]): metadata
         role_base_path (str): role path
+        template (str): repo status template
+        variables (Dict[str, str]): role variables
 
     Returns:
         List[str]: formatted metadata
@@ -313,7 +329,11 @@ def get_dependency_metadata(
     supported = get_role_dependency_supported_oses(dependency_metadata)
     supported = f"<center>{supported}</center>" if supported else supported
 
-    status = get_role_dependency_status(dependency_metadata, role_base_path)
+    if template:
+        status = get_role_dependency_status_from_template(template, variables)
+    else:
+        status = get_role_dependency_status(dependency_metadata, role_base_path)
+
     status = f"<center>{status}</center>" if status else status
 
     return [
@@ -463,3 +483,25 @@ def get_role_dependency_status(metadata: Dict[str, Any], role_path: str) -> str:
     # Replace {{ role_name }} ocurrences
     status = status.replace(r"{{ role_name }}", role_name)
     return status
+
+
+def get_role_dependency_status_from_template(
+    template: str, variables: Dict[str, str]
+) -> str:
+    """
+    Returns role status from template
+
+    Args:
+        template (str): repo status template
+        variables (Dict[str, str]): role variables
+
+    Returns:
+        str: role status
+    """
+    new_template = template[:]
+
+    for variable, value in variables.items():
+        new_template = new_template.replace("{{ " + variable + " }}", value)
+        new_template = new_template.replace("{{" + variable + "}}", value)
+
+    return new_template

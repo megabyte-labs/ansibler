@@ -28,6 +28,16 @@ ARGS = [
         "arg_help": "Overrides the JSON file used by default (ansibler.json)",
     },
     {
+        "arg_name": "repository-status-template",
+        "arg_help": "Repo status template used in role dependencies - can be " \
+                    "a string or a valid file path"
+    },
+    {
+        "arg_name": "variables",
+        "arg_help": "Variables used to populate the repo status template. It " \
+                    "must be a valid JSON file path"
+    },
+    {
         "arg_name": "clear-cache",
         "arg_help": "Clears ansibler cache",
         "arg_action": "store_true"

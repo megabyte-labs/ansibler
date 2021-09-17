@@ -207,7 +207,11 @@ def parse_os(recap: str) -> Tuple[str, str]:
                 remaining_text.append(c)
 
         if len(remaining_text) >= 1:
-            codename += f"{' '.join(remaining_text).title()})"
+            if "centos" in os_name.lower():
+                os_name += f" {' '.join(remaining_text).title()}"
+                codename = codename.rstrip(" (")
+            else:
+                codename += f"{' '.join(remaining_text).title()})"
 
         return os_name, codename
 
