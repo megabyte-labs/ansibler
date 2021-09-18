@@ -145,13 +145,13 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
         if name not in added_names:
             res.append({
-                "name": name,
+                "name": name.split(" ")[0],
                 "versions": [
                     get_formatted_os_version(name, v)
                     for v in versions
                 ]
             })
-            added_names.append(name)
+            added_names.append(name.split(" ")[0])
         else:
             for p in res:
                 added_platform_name = p.get("name")
@@ -180,6 +180,10 @@ def get_formatted_os_version(os: str, version: str) -> Union[float, int, str]:
             return int(version)
     elif isinstance(version, str) and \
         not version.replace(".", "", 1).isnumeric():
+        if os.lower() == "ubuntu" and "(" in version:
+            print(os, version)
+            return version.split("(")[-1].split(" ")[0].lower()
+
         return version
     else:
         version_ceil = math.ceil(float(version))
