@@ -234,7 +234,7 @@ async def role_dependency_chart(
             if role_paths:
                 print(f"\tDoing full re-scan...")
                 new_cache = cache_roles_metadata(role_paths, cache)
-                return role_dependency_chart(
+                return await role_dependency_chart(
                     requirement_file,
                     role_base_path,
                     new_cache,
