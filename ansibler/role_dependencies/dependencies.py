@@ -327,14 +327,16 @@ def get_dependency_metadata(
     """
     # TODO: TESTS
     supported = get_role_dependency_supported_oses(dependency_metadata)
-    supported = f"<center>{supported}</center>" if supported else supported
+    if supported:
+        supported = f"<div align=\"center\">{supported}</div>"
 
     if template:
         status = get_role_dependency_status_from_template(template, variables)
     else:
         status = get_role_dependency_status(dependency_metadata, role_base_path)
 
-    status = f"<center>{status}</center>" if status else status
+    if status:
+        status = f"<div align=\"center\">{status}</div>"
 
     return [
         get_role_dependency_link(dependency_metadata),

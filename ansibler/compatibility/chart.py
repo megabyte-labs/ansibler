@@ -232,8 +232,8 @@ def add_items_to_blueprint_compatibility(
         compat.append([
             data["os_family"],
             data["os_version"],
-            f"<center>{'✅' if data['success'] else '❌'}</center>",
-            f"<center>{idempotent}</center>",
+            f"<div align=\"center\">{'✅' if data['success'] else '❌'}</div>",
+            f"<div align=\"center\">{idempotent}</div>",
             custom_strftime("%B {S}, %Y", data["added"])
         ])
 
