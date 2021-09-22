@@ -20,13 +20,13 @@ def get_from_ansible_galaxy(role: str) -> Dict[str, Any]:
     out = get_subprocess_output(["ansible-galaxy", "info", role], "description")
 
     # Search for description, raise error if role not found
+    description = None
     if "description" in out:
         description = out.replace("description:", "").strip()
-        if not description:
-            print(f"WARNING: Role {role} not found")
-            raise RoleMetadataError("Role not found")
-    else:
-        raise RoleMetadataError("Role not found")
+
+    if not description:
+        print(f"Role {role} not found. Description will be 'Unavailable'.")
+        description = "Unavailable"
 
     # Extract data
     role_data = role.split(".")
