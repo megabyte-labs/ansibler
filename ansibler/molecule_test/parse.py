@@ -10,6 +10,9 @@ PLAY_NAME_PATTERN = r"INFO\s+Running.*>\s*(\w.*)"
 PLAY_RECAP_PATTERN = r"(PLAY RECAP.+?\s)((.+?\s)*)"
 
 PLAY_RECAP_OS_NAME_PATTERN = r"^\s?[^\s]*"
+PLAY_RECAP_PARALLEL_OS_ID_PATTERN = \
+    r"-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-" \
+    r"[A-Za-z0-9]{12}"
 OK_COUNT_PATTERN = r"ok=(\d*)"
 CHANGED_COUNT_PATTERN = r"changed=(\d*)"
 UNREACHABLE_COUNT_PATTERN = r"unreachable=(\d*)"
@@ -180,8 +183,12 @@ def parse_os(recap: str) -> Tuple[str, str]:
     if not m:
         return None, None
 
+    # Replace molecule parallel ID
+    os = m.group()
+    os = re.sub(PLAY_RECAP_PARALLEL_OS_ID_PATTERN, "", os)
+
     # Split to get name, version
-    os_data = m.group().split("-")
+    os_data = os.split("-")
 
     if len(os_data) > 1:
         os_name = os_data[0]

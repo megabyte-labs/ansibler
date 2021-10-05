@@ -181,9 +181,10 @@ def get_formatted_os_version(os: str, version: str) -> Union[float, int, str]:
     elif isinstance(version, str) and \
         not version.replace(".", "", 1).isnumeric():
         if os.lower() == "ubuntu" and "(" in version:
-            print(os, version)
             return version.split("(")[-1].split(" ")[0].lower()
-
+        elif "(" in version:
+            return version.split("(")[1] \
+                .split(" ")[0].split("-")[0].lower().replace(")", "")
         return version
     else:
         version_ceil = math.ceil(float(version))
