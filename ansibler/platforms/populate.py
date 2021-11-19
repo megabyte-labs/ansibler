@@ -96,7 +96,7 @@ def merge_platforms(
 
     for old_platform in old_platforms:
         name = old_platform.get("name", None)
-        versions = old_platform.get("versions", [])
+        versions = list(set(platform.get("versions", [])))
 
         if name is None:
             continue
