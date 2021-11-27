@@ -1,2 +1,2 @@
 name = "ansibler"
-__version__ = "0.1.169"
+__version__ = "0.1.17"
