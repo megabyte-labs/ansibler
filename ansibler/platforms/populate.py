@@ -96,7 +96,7 @@ def merge_platforms(
 
     for old_platform in old_platforms:
         name = old_platform.get("name", None)
-        versions = list(set(platform.get("versions", [])))
+        versions = old_platform.get("versions", [])
 
         if name is None:
             continue
@@ -141,7 +141,7 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
     for platform in platforms:
         name = platform.get("name")
-        versions = platform.get("versions", [])
+        versions = sorted(list(set(platform.get("versions", []))))
 
         if name not in added_names:
             res.append({
