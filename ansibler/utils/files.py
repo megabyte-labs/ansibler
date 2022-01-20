@@ -1,5 +1,6 @@
 import json
 import glob
+from nis import match
 from pathlib import Path
 import shutil
 from datetime import datetime
@@ -122,6 +123,37 @@ def copy_file(
                     json.loads(new_content), f, ensure_ascii=False, indent=2)
             else:
                 f.write(new_content)
+
+
+def grep_file(filepath: str, pattern: str) -> str:
+    """
+    Reads a file and returns the lines that match a certain pattern.
+
+    Args:
+        filepath (str): location of file
+
+    Returns:
+        str: matching file contents
+    """
+    content = read_file(filepath)
+    matches = [line for line in content.splitlines() if pattern in line]
+    return "\n".join(matches)
+
+
+def read_file(filepath: str) -> str:
+    """
+    Reads a file and returns its contents.
+
+    Args:
+        filepath (str): location of file
+
+    Returns:
+        str: file contents
+    """
+    content = None
+    with open(filepath, "r") as f:
+        content = f.read()
+    return content
 
 
 def read_gitignore(gitignore_dir: Optional[str] = "./.gitignore") -> List[str]:

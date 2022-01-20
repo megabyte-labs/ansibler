@@ -16,6 +16,8 @@ from ansibler.role_dependencies.cache import (
 from ansibler.utils.files import (
     check_folder_exists,
     check_file_exists,
+    create_folder_if_not_exists,
+    grep_file,
     list_files,
     copy_file,
     check_file_exists,
@@ -90,8 +92,8 @@ async def generate_role_dependency_chart(
                         req_file,
                         role_path,
                         cache,
-                        os.path.basename(json_file),
-                        role_paths,
+                        json_file=json_file,
+                        role_paths=role_paths,
                         template=template,
                         variables=variables
                     )
@@ -113,20 +115,32 @@ def get_default_roles() -> str:
     Returns:
         str: command output
     """
-    # Get default roles
-    bash_cmd = ["ansible-config", "dump"]
-    default_roles = get_subprocess_output(bash_cmd, "DEFAULT_ROLES_PATH")
+    # Check if ANSIBLE_CONFIG is defined in envvars and if so,
+    # extract default roles from there
+    ansible_config_file = os.getenv("ANSIBLE_CONFIG", None)
+    if ansible_config_file is not None:
+        matches = grep_file(ansible_config_file, "DEFAULT_ROLES_PATH")
+        if matches:
+            return matches
 
-    # Check if valid
-    if not default_roles or "DEFAULT_ROLES_PATH" not in default_roles:
-        raise CommandNotFound("Could not run", " ".join(bash_cmd))
+    # If no matches yet, check from ~/.ansible.cfg
+    home_dir = os.path.expanduser("~")
+    matches = grep_file(f"{home_dir}/.ansible.cfg", "roles_path")
+    if matches:
+        return matches
 
-    return default_roles
+    # If still matches yet, check from /etc/ansible/ansible.cfg.
+    matches = grep_file("/etc/ansible/ansible.cfg", "roles_path")
+    if matches:
+        return matches
+
+    # Else, return empty string
+    return ""
 
 
 def parse_default_roles(default_roles: str) -> List[str]:
     """
-    Parses default roles from raw command output
+    Parses default roles from an ansible.cfg file
 
     Args:
         default_roles (str): raw roles dump, straight from cmd output
@@ -137,14 +151,14 @@ def parse_default_roles(default_roles: str) -> List[str]:
     Returns:
         List[str]: list of role paths
     """
-    # Find list of roles
-    match = re.search(ROLES_PATTERN, default_roles)
-    if not match:
+    # Split by =
+    config_key_value = default_roles.split("=")
+    
+    if len(config_key_value) < 2:
         raise RolesParseError(f"Couldn't parse roles from: {default_roles}")
 
-    # Parse them
-    roles = match.group(0).strip("[").strip("]").replace("'", "").split(",")
-    return [role.strip() for role in roles]
+    res = [config_key_value[1].strip()]
+    return res
 
 
 def is_ansible_dir(directory: str) -> bool:
@@ -175,12 +189,11 @@ async def generate_single_role_dependency_chart(
 ) -> Coroutine[None, None, None]:
     # TODO: TESTS
     try:
-        json_basename = os.path.basename(json_file)
         await role_dependency_chart(
             requirement_file,
             role_base_path,
             cache,
-            json_file=json_basename,
+            json_file=json_file,
             role_paths=role_paths,
             template=template,
             variables=variables
@@ -214,8 +227,6 @@ async def role_dependency_chart(
         role_dependencies.append([
             "Dependency",
             "Description",
-            "Supported OSes",
-            "Status"
         ])
     else:
         print(f"\tNo dependencies found in {role_name}")
@@ -245,16 +256,7 @@ async def role_dependency_chart(
             dependency_metadata = get_from_ansible_galaxy(dep)
             append_role_to_cache(dep_name, dependency_metadata, cache)
 
-        role_dependencies.append(
-            get_dependency_metadata(
-                dependency_metadata,
-                role_base_path \
-                    if role_base_path.endswith("/") \
-                    else role_base_path + "/" + role_name,
-                template,
-                variables
-            )
-        )
+        role_dependencies.append(get_dependency_metadata(dependency_metadata))
 
     if role_base_path.startswith("./"):
         role_path = "/" + role_base_path + "/" + role_name + "/"
@@ -265,6 +267,9 @@ async def role_dependency_chart(
     ansibler_json_file = role_path + json_file
 
     if not check_file_exists(ansibler_json_file):
+        create_folder_if_not_exists(
+            ansibler_json_file.replace(os.path.basename(ansibler_json_file), "")
+        )
         create_file_if_not_exists(ansibler_json_file)
 
     try:
@@ -307,42 +312,20 @@ def read_dependencies(requirements_file_path: str) -> List[str]:
     return [role["name"] for role in data.get("roles", []) if "name" in role]
 
 
-def get_dependency_metadata(
-    dependency_metadata: Dict[str, Any],
-    role_base_path: str,
-    template: Optional[str] = None,
-    variables: Optional[str] = None
-) -> List[str]:
+def get_dependency_metadata(dependency_metadata: Dict[str, Any]) -> List[str]:
     """
     Returns formatted dependency's metadata
 
     Args:
         dependency_metadata (Dict[str, Any]): metadata
-        role_base_path (str): role path
-        template (str): repo status template
-        variables (Dict[str, str]): role variables
 
     Returns:
         List[str]: formatted metadata
     """
     # TODO: TESTS
-    supported = get_role_dependency_supported_oses(dependency_metadata)
-    if supported:
-        supported = f"<div align=\"center\">{supported}</div>"
-
-    if template:
-        status = get_role_dependency_status_from_template(template, variables)
-    else:
-        status = get_role_dependency_status(dependency_metadata, role_base_path)
-
-    if status:
-        status = f"<div align=\"center\">{status}</div>"
-
     return [
         get_role_dependency_link(dependency_metadata),
         get_role_dependency_description(dependency_metadata),
-        supported,
-        status
     ]
 
 
@@ -379,131 +362,4 @@ def get_role_dependency_description(metadata: Dict[str, Any]) -> str:
     Returns:
         str: description
     """
-    description = metadata.get("description")
-
-    if not description:
-        f"Can not get description for {metadata.get('role_name', 'role')}"
-
-    return description
-
-
-def get_role_dependency_supported_oses(metadata: Dict[str, Any]) -> str:
-    """
-    Returns list of supported OSes for a specific role
-
-    Args:
-        metadata (Dict[str, Any]): role metadata
-
-    Returns:
-        str: [description]
-    """
-    platforms = metadata.get("platforms", [])
-    repository = metadata.get("repository", None)
-
-    supported_oses = []
-    for platform in platforms:
-        name = str(platform.get("name", None)).lower()
-
-        img = "https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/"
-        alt = ""
-        if "arch" in name:
-            img += "archlinux.png"
-            alt = "Arch"
-        elif "centos" in name or "el" in name:
-            img += "centos.png"
-            alt = "EL"
-        elif "debian" in name:
-            img += "debian.png"
-            alt = "Debian"
-        elif "fedora" in name:
-            img += "fedora.png"
-            alt = "Fedora"
-        elif "freebsd" in name:
-            img += "freebsd.png"
-            alt = "FreeBSD"
-        elif "mac" in name:
-            img += "macos.png"
-            alt = "MacOS"
-        elif "ubuntu" in name:
-            img += "ubuntu.png"
-            alt = "Ubuntu"
-        elif "windows" in name:
-            img += "windows.png"
-            alt = "Windows"
-        elif "generic" in name:
-            img += "linux.png"
-            alt = "GenericUNIX"
-        else:
-            raise ValueError(f"Could not find icon for platform {name}")
-
-        if repository:
-            supported_oses.append(
-                f"<img src=\"{img}\" href=\"{repository}#supported-operating" \
-                f"-systems\" alt=\"{alt}\" />")
-        else:
-            supported_oses.append(
-                f"<img src=\"{img}\" alt=\"{alt}\" />")
-
-    supported_oses = "".join(supported_oses)
-    return supported_oses if supported_oses else "❔"
-
-
-def get_role_dependency_status(metadata: Dict[str, Any], role_path: str) -> str:
-    """
-    Returns role status
-
-    Args:
-        metadata (Dict[str, Any]): role metadata
-        role_path (str): role path
-
-    Returns:
-        str: role status
-    """
-    # Looks for .variables.json
-    role_name = metadata.get("role_name", None)
-    if not role_path.endswith("/"):
-        variables_json = role_path + "/" + "variables.json"
-    else:
-        variables_json = role_path + "variables.json"
-
-    # Return question mark if it the file does not exist
-    if not role_name or not check_file_exists(variables_json):
-        return "❔"
-
-    # Read variables json file
-    data = {}
-    try:
-        with open(variables_json) as f:
-            data = json.load(f)
-    except:
-        pass
-
-    status = data.get("role_dependencies_status_format", None)
-    if status is None:
-        return "❔"
-
-    # Replace {{ role_name }} ocurrences
-    status = status.replace(r"{{ role_name }}", role_name)
-    return status
-
-
-def get_role_dependency_status_from_template(
-    template: str, variables: Dict[str, str]
-) -> str:
-    """
-    Returns role status from template
-
-    Args:
-        template (str): repo status template
-        variables (Dict[str, str]): role variables
-
-    Returns:
-        str: role status
-    """
-    new_template = template[:]
-
-    for variable, value in variables.items():
-        new_template = new_template.replace("{{ " + variable + " }}", value)
-        new_template = new_template.replace("{{" + variable + "}}", value)
-
-    return new_template
+    return metadata.get("description", "Description unavailable")
