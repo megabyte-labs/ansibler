@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import re
 import json
+import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from ansibler.utils.files import check_folder_exists, list_files
 from ansibler.exceptions.ansibler import (
@@ -16,12 +17,9 @@ FILTER_FILES_PATTERN = r"\d{4}-\d{2}-\d{2}-.*.txt"
 
 
 def generate_compatibility_chart(
-    molecule_results_dir: Optional[str] = None,
+    molecule_results_dir: Optional[str] = MOLECULE_RESULTS_DIR,
     json_file: Optional[str] = "./ansibler.json"
 ) -> None:
-    if molecule_results_dir is None:
-        molecule_results_dir = MOLECULE_RESULTS_DIR
-
     # TODO: TESTS
     # Check molecule-results dir exists
     if not check_folder_exists(molecule_results_dir):
@@ -36,6 +34,7 @@ def generate_compatibility_chart(
     ]
 
     # Prepare to build blueprint.compatibility array
+    # Start by adding headers
     compat = [["OS Family", "OS Version", "Status", "Idempotent", "Tested On"]]
     temp_compat = {}
 
@@ -60,6 +59,7 @@ def generate_compatibility_chart(
 
                 temp_compat[os] = recap_summary
         except MoleculeTestParseError as e:
+            traceback.print_exc()
             print(f"Error while parsing molecule test file {test_file}: {e}")
 
     # Add to blueprint.compatibility

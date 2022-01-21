@@ -3,7 +3,6 @@ from unittest.mock import patch
 from ansibler.molecule_test.parse import (
     parse_play_name,
     parse_play_recap,
-    parse_play_recap_dump,
     parse_os,
     parse_recap_value,
     OK_COUNT_PATTERN
@@ -49,20 +48,6 @@ class TestParseMolecule(TestCase):
         ]
 
         self.assertEqual(res, expected_recap)
-
-    def test_parse_play_recap_dump(self):
-        """
-        Test parse play recap dump
-        """
-        dump = """
-        changed: [Ubuntu-21.04]
-        PLAY RECAP ******
-        expected result
-
-        INFO     Running docker-snap > idempotence
-        """
-        res = parse_play_recap_dump(dump)
-        self.assertEqual(res, "expected result")
 
     def test_parse_os(self):
         """
