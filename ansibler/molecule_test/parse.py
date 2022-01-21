@@ -1,18 +1,20 @@
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from ansibler.exceptions.ansibler import MoleculeTestParseError
 
 
-CONVERGE_START_PATTERN = r"INFO(\s)+Running(.*)converge"
+CONVERGE_START_PATTERN = "PLAY \[Converge\]"
+PLAY_RECAP_PATTERN = "PLAY RECAP"
+
 IDEMPOTENCE_START_PATTERN = r"INFO(\s)+Running(.*)idempotence"
 PLAY_FINISH_PATTERN = r"INFO(\s)+(.*)"
 PLAY_NAME_PATTERN = r"INFO\s+Running.*>\s*(\w.*)"
-PLAY_RECAP_PATTERN = r"(PLAY RECAP.+?\s)((.+?\s)*)"
 
 PLAY_RECAP_OS_NAME_PATTERN = r"^\s?[^\s]*"
 PLAY_RECAP_PARALLEL_OS_ID_PATTERN = \
     r"-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-" \
     r"[A-Za-z0-9]{12}"
+
 OK_COUNT_PATTERN = r"ok=(\d*)"
 CHANGED_COUNT_PATTERN = r"changed=(\d*)"
 UNREACHABLE_COUNT_PATTERN = r"unreachable=(\d*)"
@@ -22,71 +24,79 @@ RESCUED_COUNT_PATTERN = r"rescued=(\d*)"
 IGNORED_COUNT_PATTERN = r"ignored=(\d*)"
 
 
-def parse_test(molecule_test_dump: str) -> Dict[str, Any]:
-    """
-    Parses a molecule test - includes 'converge' and 'idempotence'
+def parse_test(test: str) -> Dict[str, Any]:
+    """[summary]
 
     Args:
-        molecule_test_dump (str): molecule test dump
+        test (str): molecule test content
 
     Returns:
-        Dict[str, Any]: parsed molecule test
+        Dict[str, Any]: [description]
     """
-    test = {}
+    parsed_test = {}
 
-    converge_test = parse_play(CONVERGE_START_PATTERN, molecule_test_dump)
-    if converge_test:
-        test["converge"] = converge_test
+    # Scan text in test for first ocurrence of PLAY [Converge]
+    # (This is where the role first starts installing the first time around)
+    converge_index = scan_molecule_results(
+        test, scan_for=CONVERGE_START_PATTERN, start_from=0)
 
-    try:
-        idempotence_test = parse_play(
-            IDEMPOTENCE_START_PATTERN, molecule_test_dump)
-    except MoleculeTestParseError:
-        idempotence_test = None
+    # (This is where the role first starts installing the first time around)
+    converge_recap_start = scan_molecule_results(
+        test, scan_for=PLAY_RECAP_PATTERN, start_from=converge_index)
 
-    if idempotence_test:
-        test["idempotence"] = idempotence_test
+    converge_recap_end = scan_molecule_results(
+        test, scan_for="\n\n", start_from=converge_recap_start)
 
-    return test
+    # Extract section
+    parsed_test["converge"] = {
+        "play_recap": parse_play_recap(
+            test[converge_recap_start:converge_recap_end]
+        )
+    }
 
-
-def parse_play(play_pattern: str, molecule_test_dump: str) -> Dict[str, Any]:
-    """
-    Extracts a PLAY from a molecule test dump
-
-    Args:
-        play_pattern (str): play start pattern (regexp)
-        molecule_test_dump (str): molecule test dump
-
-    Raises:
-        MoleculeTestParseError: raised when PLAY not found
-
-    Returns:
-        Dict[str, Any]: formatted play
-    """
-    play = {}
-
-    m = re.search(play_pattern, molecule_test_dump)
-    if not m:
-        raise MoleculeTestParseError("PLAY not found")
-
-    # Get start and end index
-    play_info_dump = m.group()
-    play_start, play_end = m.span()[0], -1
-
-    m = re.search(
-        PLAY_FINISH_PATTERN,
-        molecule_test_dump[play_start + len(play_info_dump):]
+    # For idempotency column, continue in text until you see PLAY [Converge]
+    idempotency_index = scan_molecule_results(
+        test, scan_for=CONVERGE_START_PATTERN, start_from=converge_recap_end
     )
+
+    # If only one [Converge] section, dont calculate the idempotency indicator
+    if not idempotency_index:
+        parsed_test["idempotence"] = {}
+        return parsed_test
+
+    # If another [Converge] section was found...
+    # Go to next occurrence of PLAY RECAP
+    idempotency_recap_start = scan_molecule_results(
+        test, scan_for=PLAY_RECAP_PATTERN, start_from=idempotency_index)
+
+    idempotency_recap_end = scan_molecule_results(
+        test, scan_for="\n\n", start_from=idempotency_recap_start)
+
+    # Extract section
+    parsed_test["idempotence"] = {
+        "play_recap": parse_play_recap(
+            test[idempotency_recap_start:idempotency_recap_end]
+        )
+    }
+
+    # Scan through the results and mark anything that has any changed
+    return parsed_test
+
+
+def scan_molecule_results(
+    results: str,
+    scan_for: str,
+    start_from: Optional[int] = 0
+) -> int:
+    # Slice molecule results text
+    results_substr = results[start_from:]
+
+    # Search for pattern
+    m = re.search(scan_for, results_substr)
     if m:
-        play_end = len(molecule_test_dump[:play_start]) + m.span()[1]
+        return m.start() + start_from
 
-    # Parse play name and play recap info
-    play_dump = molecule_test_dump[play_start:play_end]
-    play["play_name"] = parse_play_name(play_info_dump)
-    play["play_recap"] = parse_play_recap(play_dump)
-
-    return play 
+    return None
 
 
 def parse_play_name(play_dump: str) -> str:
@@ -120,10 +130,10 @@ def parse_play_recap(play_dump: str) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: list of recaps per OS
     """
     recap = []
-    play_recap_dump = parse_play_recap_dump(play_dump)
+    recap_lines = play_dump.splitlines()
 
-    recap_lines = play_recap_dump.splitlines()
-    for recap_line in recap_lines:
+    # Iterate lines, but skip first (PLAY RECAP ***)
+    for recap_line in recap_lines[1:]:
         os_name, os_version = parse_os(recap_line)
         if not os_name:
             continue
@@ -148,25 +158,6 @@ def parse_play_recap(play_dump: str) -> List[Dict[str, Any]]:
         })
 
     return recap
-
-
-def parse_play_recap_dump(play_dump: str) -> str:
-    """
-    Parses PLAY RECAP dump, without any formatting
-
-    Args:
-        play_dump (str): molecule test PLAY dump
-
-    Raises:
-        MoleculeTestParseError: raised when PLAY RECAP is not found
-
-    Returns:
-        str: play recap dump
-    """
-    m = re.search(PLAY_RECAP_PATTERN, play_dump)
-    if not m:
-        raise MoleculeTestParseError("Could not parse PLAY RECAP")
-    return m.group(2).strip()
 
 
 def parse_os(recap: str) -> Tuple[str, str]:
