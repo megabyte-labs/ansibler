@@ -4,14 +4,14 @@ specifiers:
   '@washingtondc/development': ^1.0.2
   '@washingtondc/prettier': ^1.0.0
   '@washingtondc/release': ^0.0.2
-  eslint-config-strict-mode: ^1.0.0
+  eslint-config-strict-mode: ^1.0.11
   sleekfast: ^0.0.1
 
 devDependencies:
   '@washingtondc/development': 1.0.10
   '@washingtondc/prettier': 1.0.0
   '@washingtondc/release': 0.0.2
-  eslint-config-strict-mode: 1.0.9
+  eslint-config-strict-mode: 1.0.11
   sleekfast: 0.0.1
 
 packages:
@@ -3163,7 +3163,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001301
-      electron-to-chromium: 1.4.50
+      electron-to-chromium: 1.4.51
       escalade: 3.1.1
       node-releases: 2.0.1
       picocolors: 1.0.0
@@ -4763,8 +4763,8 @@ packages:
       sigmund: 1.0.1
     dev: true
 
-  /electron-to-chromium/1.4.50:
-    resolution: {integrity: sha512-g5X/6oVoqLyzKfsZ1HsJvxKoUAToFMCuq1USbmp/GPIwJDRYV1IEcv+plYTdh6h11hg140hycCBId0vf7rL0+Q==}
+  /electron-to-chromium/1.4.51:
+    resolution: {integrity: sha512-JNEmcYl3mk1tGQmy0EvL5eik/CKSBuzAyGP0QFdG6LIgxQe3II0BL1m2zKc2MZMf3uGqHWE1TFddJML0RpjSHQ==}
     dev: true
 
   /elegant-spinner/1.0.1:
@@ -5119,8 +5119,8 @@ packages:
       eslint: 8.7.0
     dev: true
 
-  /eslint-config-strict-mode/1.0.9:
-    resolution: {integrity: sha512-fx+Cy0U/Nm3+e/bYGpL7GFCKnfVi/ji/yX//KTa73jJaY4amoBSlHv+fCtsdeIn2/8PC/B8y21ieZtdILCKM/Q==}
+  /eslint-config-strict-mode/1.0.11:
+    resolution: {integrity: sha512-/bEbo6xHqMPiwNYrJHT/JBc+knaPvvkHQQLKhNo7VqvSC3mb3DgKNDFqOgzs5QAE1SoYAuH3eRmb58Ok3ACj5g==}
     engines: {node: '>=14.18.0'}
     dependencies:
       '@typescript-eslint/eslint-plugin': 5.10.0_dac6134a22fe1289d58145b0b92ae060
