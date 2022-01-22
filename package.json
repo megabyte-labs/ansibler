@@ -66,6 +66,7 @@
     "binName": "ansibler",
     "customPackageName": "ansibler",
     "description": "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results",
+    "subheader_description": "Generate JSON data that describes the dependencies of an Ansible playbook/role. Also, automatically generate OS compatibility charts using Molecule.",
     "group": "python",
     "name": "Ansibler",
     "overview": "**Ansibler** is a CLI tool meant to accompany Ansible project's that wish to convey accurate information to the public. In an Ansibler workflow, instead of marking every platform as `all` in `meta/main.yml`, we first run Molecule tests and save the logs. Ansibler can take the logs and do a few cool things with them. It generates compatibility chart data in JSON format that you can embed in the `README.md` with [@appnest/readme](https://www.npmjs.com/package/@appnest/readme). After that, you can use Ansibler to automatically generate **accurate** `meta/main.yml` platform data.",
