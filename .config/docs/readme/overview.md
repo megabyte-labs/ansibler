@@ -1,3 +1,3 @@
 ## Overview
 
-{{ overview }}
+{{ alternative_description }}. {{ overview }}
