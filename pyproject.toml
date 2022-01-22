@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://megabyte.space"
 documentation = "https://megabyte.space/docs/python/library"
-keywords = ["automation", "cli", "go", "go-lang", "golang", "mblabs", "megabytelabs", "professormanhattan", "terminal", "washingtondc"]
+keywords = ["advanced", "automation", "bandit", "beginner", "boilerplate", "cli", "easy", "gitlab-ci", "go", "go-lang", "golang", "mblabs", "megabytelabs", "poetry", "professormanhattan", "pytest", "python", "terminal", "washingtondc"]
 include = ["CHANGELOG.md", "LICENSE"]
 classifiers = [
   "Development Status :: 4 - Beta",

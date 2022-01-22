@@ -52,7 +52,7 @@
   </a>
 </div>
 
-> </br><h4 align="center">**subheader_description**</h4></br>
+> </br><h4 align="center">**Generate JSON data that describes the dependencies of an Ansible playbook/role. Also, automatically generate OS compatibility charts using Molecule.**</h4></br>
 
 <!--TERMINALIZE![terminalizer_title](repository.group.python_cli/ansibler* **github**: /raw/master/.demo.gif
 * **gitlab**: /-/raw/master/.demo.gif)TERMINALIZE-->
@@ -62,6 +62,14 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Usage](#usage)
+  - [Generating Compatibility Charts](#generating-compatibility-charts)
+  - [Populating Platforms](#populating-platforms)
+  - [Role Dependency Charts](#role-dependency-charts)
+- [Additional Info](#additional-info)
+  - [Caching](#caching)
+  - [Overriding ansibler.json and meta/main.yml](#overriding-ansiblerjson-and-metamainyml)
+  - [Help](#help)
 - [Installation](#installation)
   - [PyPi](#pypi)
   - [Install Doctor](#install-doctor)
@@ -76,7 +84,113 @@
 
 ## Overview
 
-alternative_description. **Ansibler** is a CLI tool meant to accompany Ansible project's that wish to convey accurate information to the public. In an Ansibler workflow, instead of marking every platform as `all` in `meta/main.yml`, we first run Molecule tests and save the logs. Ansibler can take the logs and do a few cool things with them. It generates compatibility chart data in JSON format that you can embed in the `README.md` with [@appnest/readme](https://www.npmjs.com/package/@appnest/readme). After that, you can use Ansibler to automatically generate **accurate** `meta/main.yml` platform data.
+**Ansibler** is a CLI tool meant to accompany Ansible project's that wish to convey accurate information to the public. In an Ansibler workflow, instead of marking every platform as `all` in `meta/main.yml`, we first run Molecule tests and save the logs. Ansibler can take the logs and do a few cool things with them. It generates compatibility chart data in JSON format that you can embed in the `README.md` with [@appnest/readme](https://www.npmjs.com/package/@appnest/readme). After that, you can use Ansibler to automatically generate **accurate** `meta/main.yml` platform data.
+
+<a href="#usage" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Usage
+
+With Ansibler, you can extract both role dependencies and OS compatibility data with the help of [Molecule Tests](https://molecule.readthedocs.io/en/latest/).
+
+### Generating Compatibility Charts
+
+Say you have run `molecule test` and want to generate updated compatibility charts for your role using the test's output. With Ansibler, it's possible to do just that!
+
+1. Start by dumping the results of your test to `./.molecule-results/YEAR-MONTH-DAY-scenario_tag.txt`. You can do that by running: `PY_COLORS=0 molecule test > .molecule-results/2021-08-07-docker-snap.txt` (make sure to put PY_COLORS=0 at the beginning of the command so the colors are stripped).
+
+2. Then, simply run `ansibler --generate-compatibility-chart` and a new `ansibler.json` will be generated, which will have your brand new compatibility chart under `compatibility_matrix`. It will look something like this:
+
+```
+"compatibility_matrix": [
+    ["OS Family", "OS Version", "Status", "Idempotent", "Tested On"],
+    ["Fedora", "33", "❌", "❌", "April 4th, 2006"],
+    ["Ubuntu", "focal", "✅", "❌", "February 5th, 2009"],
+    ["Windows", "10", "✅"", "✅"", "January 6th 2020"]
+  ],
+```
+
+_TIP:_ Don't like the `.molecule-results` dir? No problem. You can tell Ansibler to use another directory by passing `--molecule-results-dir` - example:
+
+`ansibler --generate-compatibility-chart --molecule-results-dir molecule/.results`
+
+### Populating Platforms
+
+You can also update your role's `meta/main.yml` so that `galaxy_info.platforms` matches the new `compatibility_matrix` chart. Simply run the following:
+
+```
+ansibler --populate-platforms
+```
+
+### Role Dependency Charts
+
+Finally, you can also add dependency data to your role's `ansibler.json` file. Simply run:
+
+```
+ansibler --role-dependencies
+```
+
+Ansibler reads your dependencies from `requirements.yml` and then builds an additional depencency chart, which will be added under `role_dependencies` and will look something like the following:
+
+```
+{
+  "role_dependencies": [
+    [
+      "Dependency",
+      "Description",
+      "Supported OSes",
+      "Status"
+    ],
+    [
+      "<b><a href=\"https://galaxy.ansible.com/professormanhattan/snapd\" title=\"professormanhattan.snapd on Ansible Galaxy\" target=\"_blank\">professormanhattan.snapd</a></b>",
+      "Ensures Snap is installed and properly configured on Linux",
+      "<a title=\"Windows 11 build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-snapd/actions/Windows.yml\" target=\"_blank\"><img alt=\"Windows 11 build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-snapd/Windows/master?color=cyan&label=Windows%20build&logo=windows&style=flat\"></a><a title=\"macOS build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-snapd/actions/macOS.yml\" target=\"_blank\"><img alt=\"macOS build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-androidstudio/macOS/master?label=macOS%20build&logo=apple&style=flat\"></a>"
+    ],
+    [
+      "<b><a href=\"https://galaxy.ansible.com/professormanhattan/homebrew\" title=\"professormanhattan.homebrew on Ansible Galaxy\" target=\"_blank\">professormanhattan.homebrew</a></b>",
+      "Installs Homebrew on nearly any OS",
+      "For simplicity, this cell's data has not been added.",
+      "<a title=\"Windows 11 build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-homebrew/actions/Windows.yml\" target=\"_blank\"><img alt=\"Windows 11 build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-homebrew/Windows/master?color=cyan&label=Windows%20build&logo=windows&style=flat\"></a><a title=\"macOS build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-homebrew/actions/macOS.yml\" target=\"_blank\"><img alt=\"macOS build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-androidstudio/macOS/master?label=macOS%20build&logo=apple&style=flat\"></a>"
+    ]
+  ]
+}
+```
+
+_NOTE:_ the Status column gets generated by reading the `role_dependencies_status_format` field in `./variables.json` and then replacing all ocurrences of `role_name` with each dependency name.
+
+You can also use a template file and populate it using an additional variables file - the two arguments for that:
+
+- `--repository-status-template`: you can pass a filepath or a string.
+- `--variables`: JSON file that defines the variables. Any ocurrences of `variable` in the template will be replaced with the corresponding variable in this JSON file.
+
+_TIP:_ You can also run `ansibler --role-dependencies` in your playbooks. Ansibler will attempt to read your roles path (using `ansible-dump`) and generate role dependencies for ALL your roles!
+
+<a href="#additional-info" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Additional Info
+
+### Caching
+
+Ansibler generates a cache file under `~/.local/megabytelabs/ansibler` - you can clear it with:
+
+```
+ansibler --clear-cache
+```
+
+### Overriding ansibler.json and meta/main.yml
+
+By default, Ansibler writes to (and reads from) `ansibler.json`. If you want to override this, add `--json-file` when you use Ansibler. For example:
+
+```
+ansibler --generate-compatibility-chart --json-file .example.json
+ansibler --populate-platforms --json-file .example.json
+ansibler --role-dependencies --json-file .example.json
+```
+
+### Help
+
+```
+ansibler --help
+```
 
 <a href="#installation" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
 
@@ -145,8 +259,6 @@ bash .config/scripts/start.sh
 task start
 task --list
 ```
-
-{{ load:.assets/docs.md }}
 
 <a href="#contributing" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
 
