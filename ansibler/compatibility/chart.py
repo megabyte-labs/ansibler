@@ -5,7 +5,9 @@ import re
 import json
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
-from ansibler.utils.files import check_folder_exists, list_files
+from ansibler.utils.files import (
+    check_folder_exists, create_folder_if_not_exists, list_files
+)
 from ansibler.exceptions.ansibler import (
     MoleculeTestParseError, MoleculeTestsNotFound
 )
@@ -51,13 +53,14 @@ def generate_compatibility_chart(
             # recent for a given OS
             play_recap = converge.get("play_recap", [])
             for recap in play_recap:
-                os, recap_summary = get_play_recap_summary(
+                os_name, recap_summary = get_play_recap_summary(
                     recap, idempotence, test_date)
 
-                if os in temp_compat and test_date < temp_compat[os]["added"]:
+                if os_name in temp_compat and \
+                    test_date < temp_compat[os_name]["added"]:
                     continue
 
-                temp_compat[os] = recap_summary
+                temp_compat[os_name] = recap_summary
         except MoleculeTestParseError as e:
             traceback.print_exc()
             print(f"Error while parsing molecule test file {test_file}: {e}")
@@ -77,6 +80,11 @@ def generate_compatibility_chart(
         data = {}
 
     data["compatibility_matrix"] = compat
+
+    # Create output path if not exists
+    create_folder_if_not_exists(
+        json_file.replace(os.path.basename(json_file), "")
+    )
 
     # Save
     with open(json_file, "w") as f:

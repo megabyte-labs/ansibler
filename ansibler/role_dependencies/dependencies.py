@@ -1,15 +1,13 @@
 import os
 import pathlib
-import re
 import json
 import asyncio
 from json.decoder import JSONDecodeError
 from typing import Any, Coroutine, Dict, List, Optional
 from ruamel.yaml import YAML
-from ansibler.utils.subprocesses import get_subprocess_output
 from ansibler.role_dependencies.role_info import get_role_name_from_req_file
 from ansibler.role_dependencies.galaxy import get_from_ansible_galaxy
-from ansibler.exceptions.ansibler import CommandNotFound, MetaYMLError, RolesParseError
+from ansibler.exceptions.ansibler import MetaYMLError, RolesParseError
 from ansibler.role_dependencies.cache import (
     read_roles_metadata_from_cache, cache_roles_metadata, append_role_to_cache
 )
@@ -151,6 +149,9 @@ def parse_default_roles(default_roles: str) -> List[str]:
     Returns:
         List[str]: list of role paths
     """
+    if not default_roles:
+        return []
+
     # Split by =
     config_key_value = default_roles.split("=")
     

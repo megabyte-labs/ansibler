@@ -1,10 +1,9 @@
 import json
 import glob
-from nis import match
 from pathlib import Path
 import shutil
 from datetime import datetime
-from typing import AnyStr, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 
 def create_folder_if_not_exists(path: str) -> None:
@@ -135,7 +134,11 @@ def grep_file(filepath: str, pattern: str) -> str:
     Returns:
         str: matching file contents
     """
-    content = read_file(filepath)
+    try:
+        content = read_file(filepath)
+    except FileNotFoundError:
+        return ""
+
     matches = [line for line in content.splitlines() if pattern in line]
     return "\n".join(matches)
 
