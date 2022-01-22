@@ -1,0 +1,145 @@
+{
+  "private": false,
+  "name": "go-bodega",
+  "version": "0.0.1",
+  "description": "A gorgeous, feature-packed drop-in replacement for the go-task project",
+  "license": "MIT",
+  "author": "Brian Zalewski <brian@megabyte.space> (https://megabyte.space)",
+  "homepage": "https://megabyte.space",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProfessorManhattan/Bodega.git"
+  },
+  "bugs": {
+    "email": "help@megabyte.space",
+    "url": "https://gitlab.com/megabyte-labs/go/cli/bodega/-/issues"
+  },
+  "type": "module",
+  "scripts": {
+    "help": "task --list",
+    "prepare": "task common:husky",
+    "repair": "bash <(curl -sS https://install.doctor/repair)",
+    "start": "bash .config/start.sh"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-emoji-conventional"
+    }
+  },
+  "dependencies": {},
+  "optionalDependencies": {},
+  "devDependencies": {
+    "@washingtondc/development": "^1.0.2",
+    "@washingtondc/prettier": "^1.0.0",
+    "@washingtondc/release": "^0.0.2",
+    "eslint-config-strict-mode": "^1.0.0",
+    "sleekfast": "^0.0.1"
+  },
+  "keywords": [
+    "automation",
+    "cli",
+    "go",
+    "go-lang",
+    "golang",
+    "mblabs",
+    "megabytelabs",
+    "professormanhattan",
+    "terminal",
+    "washingtondc"
+  ],
+  "engines": {
+    "node": ">=14.18.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "blueprint": {
+    "binName": "ansibler",
+    "customPackageName": "ansibler",
+    "description": "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results",
+    "group": "python",
+    "name": "Ansibler",
+    "overview": "**Ansibler** is a CLI tool meant to accompany Ansible project's that wish to convey accurate information to the public. In an Ansibler workflow, instead of marking every platform as `all` in `meta/main.yml`, we first run Molecule tests and save the logs. Ansibler can take the logs and do a few cool things with them. It generates compatibility chart data in JSON format that you can embed in the `README.md` with [@appnest/readme](https://www.npmjs.com/package/@appnest/readme). After that, you can use Ansibler to automatically generate **accurate** `meta/main.yml` platform data.",
+    "repository": {
+      "github": "https://github.com/ProfessorManhattan/ansibler",
+      "gitlab": "https://gitlab.com/megabyte-labs/python/cli/ansibler"
+    },
+    "slug": "ansibler",
+    "subgroup": "cli",
+    "title": "Ansibler - Compatibility Data Tool for Ansible"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "helpUrl": "https://megabyte.space/docs/contributing/commits"
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-strict-mode",
+    "ignorePatterns": [
+      "testdata/**/*"
+    ]
+  },
+  "funding": [
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/megabytelabs"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/ProfessorManhattan"
+    }
+  ],
+  "lint-staged": {
+    "**/!(logo).(jpg|png)": [
+      "task image:compress --"
+    ],
+    "**/*": [
+      "task lint:any --"
+    ],
+    "**/*.(css|html|less|md|mjml|php|scss|sh|xml)": [
+      "task fix:prettier --"
+    ],
+    "**/*.(js|jsx|ts|tsx)": [
+      "task fix:js --",
+      "task lint:js --"
+    ],
+    "**/*.json": [
+      "task fix:json --"
+    ],
+    "**/*.sh": [
+      "task lint:shell --"
+    ],
+    "**/*.toml": [
+      "task lint:toml --"
+    ],
+    "**/*.xml": [
+      "task fix:xml --",
+      "task lint:xml --"
+    ],
+    "**/*.yml": [
+      "task fix:yaml --",
+      "task lint:yaml --"
+    ],
+    "logo.png": [
+      "task image:resize -- 200 200",
+      "task image:compress --"
+    ]
+  },
+  "ntl": {
+    "descriptions": {
+      "help": "Display a list of tasks that can be run via the Taskfile.yml",
+      "prepare": "Hook, triggered by running npm install, that runs logic such as installing pre-commit hooks",
+      "repair": "Fixes basic issues in projects that are having trouble running basic commands like 'task start'",
+      "start": "Entrypoint for new developers that installs requirements and then runs 'task start'"
+    }
+  },
+  "prettier": "@washingtondc/prettier",
+  "release": {
+    "branches": [
+      "master",
+      "next"
+    ],
+    "extends": "@washingtondc/release"
+  }
+}

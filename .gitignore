@@ -5,13 +5,6 @@ __pycache__/
 # Virtual env
 venv/
 
-# Test files
-blueprint.compatibility/
-molecule*/
-meta/
-package.json
-package.*.json
-
 # Test scripts
 test-install.sh
 
