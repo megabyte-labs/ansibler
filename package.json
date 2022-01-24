@@ -94,6 +94,7 @@
       "testdata/**/*"
     ],
     "rules": {
+      "import/no-extraneous-dependencies": "warn",
       "max-len": "warn",
       "max-lines": "warn"
     }
