@@ -3,15 +3,25 @@ import math
 from typing import Any, Dict, List, Optional, Union
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
+from ansibler.platforms.platform_map import (
+    parse_platform_map,
+    map_to_galaxy_supported_platforms
+)
 from ansibler.utils.files import create_folder_if_not_exists
 
 
-def populate_platforms(json_file: Optional[str] = "./ansibler.json") -> None:
+def populate_platforms(
+    json_file: Optional[str] = "./ansibler.json",
+    platform_map_file: Optional[str] = None
+) -> None:
     # TODO: TESTS
     # Read from package.json
     data = read_json_file(json_file)
     compatibility = data.get("compatibility_matrix", [])
     compatibility = [] if len(compatibility) <= 1 else compatibility[1:]
+
+    # Parse Platform Map
+    platform_map = parse_platform_map(platform_map_file)
 
     # Generate platforms value
     platforms, supported, unsupported = [], [], []
@@ -39,6 +49,9 @@ def populate_platforms(json_file: Optional[str] = "./ansibler.json") -> None:
     platforms = join_platforms(platforms)
 
     galaxy_info["platforms"] = platforms if platforms else None
+    galaxy_info["platforms"] = map_to_galaxy_supported_platforms(
+        galaxy_info["platforms"], platform_map
+    )
     meta_main["galaxy_info"] = galaxy_info
 
     # Save

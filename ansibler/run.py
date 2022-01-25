@@ -34,7 +34,8 @@ def run_ansibler() -> None:
         generate_compatibility_chart(
             molecule_results_dir, json_file=json_file)
     elif "populate-platforms" in args:
-        populate_platforms(json_file=json_file)
+        platform_map = args.get("platform-map", None)
+        populate_platforms(json_file=json_file, platform_map_file=platform_map)
     elif "role-dependencies" in args:
         repository_status_template = args.get(
             "repository-status-template", None)
