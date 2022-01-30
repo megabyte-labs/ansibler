@@ -28,6 +28,10 @@ ARGS = [
         "arg_help": "Overrides the JSON file used by default (ansibler.json)",
     },
     {
+        "arg_name": "platform-map",
+        "arg_help": "Maps Ansibler's OS-release to those in the map",
+    },
+    {
         "arg_name": "repository-status-template",
         "arg_help": "Repo status template used in role dependencies - can be " \
                     "a string or a valid file path"
