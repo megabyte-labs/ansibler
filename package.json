@@ -82,6 +82,16 @@
     "subheader_description": "Generate JSON data that describes the dependencies of an Ansible playbook/role. Also, automatically generate OS compatibility charts using Molecule.",
     "title": "Ansibler - Compatibility Data Tool for Ansible"
   },
+  "changelog": {
+    "displayTypes": [
+      "feat",
+      "fix",
+      "perf",
+      "refactor",
+      "revert"
+    ],
+    "showAuthor": true
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
