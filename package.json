@@ -68,8 +68,8 @@
   },
   "blueprint": {
     "binName": "ansibler",
-    "customPyPiPackageName": "ansibler",
     "customPackageName": "ansibler",
+    "customPyPiPackageName": "ansibler",
     "description": "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results",
     "github_id": "R_kgDOGtz8rQ",
     "gitlab_group_id": "14289563",

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-ansibler"
+name = "ansibler"
 version = "0.2.4"
 description = "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results"
 authors = ["Brian Zalewski <brian@megabyte.space>"]
@@ -7,7 +7,6 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://megabyte.space"
 documentation = "https://megabyte.space/docs/python/library"
-repository ## TODO
 keywords = ["advanced", "automation", "bandit", "beginner", "boilerplate", "cli", "easy", "gitlab-ci", "go", "go-lang", "golang", "mblabs", "megabytelabs", "poetry", "professormanhattan", "pytest", "python", "terminal", "washingtondc"]
 include = ["CHANGELOG.md", "LICENSE"]
 classifiers = [
@@ -58,24 +57,22 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.10.0,<3.11"
+aiohttp = "^3.7.4"
+arrow = "^1.1.1"
+better-exceptions = "^0.3.3"
+celery = "^5.1.2"
+click = "^8.0.3"
+fire = "^0.4.0"
+furl = "^2.1.2"
+requests = "^2.26.0"
+rich = "^10.9.0"
+schedule = "^1.1.0"
+schema = "^0.7.4"
+sh = "^1.14.2"
+Sphinx = "^4.1.2"
+sphinx-press-theme = "^0.8.0"
 
-# Boilerplate Extras -> `poetry install -E boilerplate`
-aiohttp = { version = "^3.7.4", optional = true }
-arrow = { version = "^1.1.1", optional = true }
-better-exceptions = { version = "^0.3.3", optional = true }
-celery = { version = "^5.1.2", optional = true }
-click = { version = "^8.0.3", optional = true }
-fire = { version = "^0.4.0", optional = true }
-furl = { version = "^2.1.2", optional = true }
-requests = { version = "^2.26.0", optional = true }
-rich = { version = "^10.9.0", optional = true }
-schedule = { version = "^1.1.0", optional = true }
-schema = { version = "^0.7.4", optional = true }
-sh = { version = "^1.14.2", optional = true }
-Sphinx = { version = "^4.1.2", optional = true }
-sphinx-press-theme = { version = "^0.8.0", optional = true }
-
-# Semantic Release Extras -> `poetry install -E semantic`
+# semantic extras -> `poetry install -E semantic`
 pip = { version = "^21.3.0", optional = true }
 setuptools = { version = "^58.2.0", optional = true }
 twine = { version = "^3.4.2", optional = true }
@@ -97,22 +94,6 @@ pytest = "^6.2.5"
 yamllint = "^1.26.3"
 
 [tool.poetry.extras]
-boilerplate = [
-  "aiohttp",
-  "arrow",
-  "better-exceptions",
-  "celery",
-  "click",
-  "fire",
-  "furl",
-  "requests",
-  "rich",
-  "schedule",
-  "schema",
-  "sh",
-  "Sphinx",
-  "sphinx-press-theme"
-]
 semantic = [
   "pip",
   "setuptools",
@@ -131,16 +112,3 @@ semantic = [
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.flakehell]
-exclude = ["example.py", "README.rst"]
-format = "grouped"
-max_line_length = 120
-show_source = true
-
-[tool.flakehell.plugins]
-pycodestyle = ["+*"]
-pyflakes = ["+*"]
-flake8-commas = ["+*"]
-flake8-quotes = ["+*"]
-pylint = ["+F*", "+E*", "-E0611", "-E1101", "-E0401", "-E1102", "-E1123"]

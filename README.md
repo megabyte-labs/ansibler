@@ -29,8 +29,8 @@
 </div>
 <br/>
 <div align="center">
-  <a title="Version: 0.0.1" href="https://github.com/ProfessorManhattan/ansibler" target="_blank">
-    <img alt="Version: 0.0.1" src="https://img.shields.io/badge/version-0.0.1-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAACNJREFUCNdjIACY//+BEp9hhM3hAzYQwoBIAqEDYQrCZLwAAGlFKxU1nF9cAAAAAElFTkSuQmCC&cacheSeconds=2592000&style=flat-square" />
+  <a title="Version: 0.2.4" href="https://github.com/ProfessorManhattan/ansibler" target="_blank">
+    <img alt="Version: 0.2.4" src="https://img.shields.io/badge/version-0.2.4-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAACNJREFUCNdjIACY//+BEp9hhM3hAzYQwoBIAqEDYQrCZLwAAGlFKxU1nF9cAAAAAElFTkSuQmCC&cacheSeconds=2592000&style=flat-square" />
   </a>
   <a title="Build status on GitLab" href="https://gitlab.com/megabyte-labs/python/cli/ansibler/-/commits/master" target="_blank">
     <img alt="GitLab build status" src="https://img.shields.io/gitlab/pipeline-status/megabyte-labs/python/cli/ansibler?branch=master&label=build&logo=gitlab&style=flat-square">
