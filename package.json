@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "ansibler",
-  "version": "0.0.1",
+  "version": "0.2.4",
   "description": "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results",
   "license": "MIT",
   "author": "Brian Zalewski <brian@megabyte.space> (https://megabyte.space)",
@@ -68,6 +68,7 @@
   },
   "blueprint": {
     "binName": "ansibler",
+    "customPyPiPackageName": "ansibler",
     "customPackageName": "ansibler",
     "description": "An Ansible CLI tool that generates platform compatibility data and charts from Molecule test results",
     "github_id": "R_kgDOGtz8rQ",
