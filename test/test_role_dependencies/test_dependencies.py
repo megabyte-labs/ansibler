@@ -6,19 +6,21 @@ from ansibler.role_dependencies.dependencies import (
     get_role_dependency_link,
     get_role_dependency_description,
     get_role_dependency_supported_oses,
-    get_role_dependency_status
+    get_role_dependency_status,
 )
 from ansibler.exceptions.ansibler import CommandNotFound, RolesParseError
 
 
 class TestRoleDependencies(TestCase):
-    VALID_DEFAULT_ROLES = "DEFAULT_ROLES_PATH(/opt/Playbooks/ansible.cfg) = [" \
-        "'/opt/Playbooks/roles/applications', '/opt/Playbooks/roles/crypto', " \
-        "'/opt/Playbooks/roles/helpers', '/opt/Playbooks/roles/languages', '/" \
-        "opt/Playbooks/roles/misc', '/opt/Playbooks/roles/services', '/opt/Pl" \
-        "aybooks/roles/system', '/opt/Playbooks/roles/tools', '/opt/Playbooks" \
-        "/roles/virtualization', '/root/.ansible/roles', '/usr/share/ansible/" \
+    VALID_DEFAULT_ROLES = (
+        "DEFAULT_ROLES_PATH(/opt/Playbooks/ansible.cfg) = ["
+        "'/opt/Playbooks/roles/applications', '/opt/Playbooks/roles/crypto', "
+        "'/opt/Playbooks/roles/helpers', '/opt/Playbooks/roles/languages', '/"
+        "opt/Playbooks/roles/misc', '/opt/Playbooks/roles/services', '/opt/Pl"
+        "aybooks/roles/system', '/opt/Playbooks/roles/tools', '/opt/Playbooks"
+        "/roles/virtualization', '/root/.ansible/roles', '/usr/share/ansible/"
         "roles', '/etc/ansible/roles']"
+    )
 
     @patch("ansibler.role_dependencies.dependencies.get_subprocess_output")
     def test_get_roles(self, mock_get_subprocess_output):
@@ -64,10 +66,11 @@ class TestRoleDependencies(TestCase):
         """
         l = get_role_dependency_link({"role_name": "role", "namespace": "user"})
 
-        expected = \
-            f"<a href=\"https://galaxy.ansible.com/user/role\"" \
-            f"title=\"user.role on Ansible Galaxy\" target=\"_" \
-            f"blank\">user.role</a>"
+        expected = (
+            f'<a href="https://galaxy.ansible.com/user/role"'
+            f'title="user.role on Ansible Galaxy" target="_'
+            f'blank">user.role</a>'
+        )
 
         self.assertEqual(l, expected)
 
@@ -84,21 +87,17 @@ class TestRoleDependencies(TestCase):
         """
         metadata = {
             "platforms": [{"name": "Ubuntu"}, {"name": "MacOSX"}],
-            "repository": "repo"
+            "repository": "repo",
         }
         r = get_role_dependency_supported_oses(metadata)
-        self.assertIn(
-            "gitlab.com/megabyte-labs/assets/-/raw/master/icon/ubuntu.png", r)
+        self.assertIn("gitlab.com/megabyte-labs/assets/-/raw/master/icon/ubuntu.png", r)
 
     def test_get_role_dependency_supported_oses_invalid_os(self):
         """
         Makes sure get role dependency supported oses raises an exception when
         an invalid platform is read
         """
-        metadata = {
-            "platforms": [{"name": "InvalidOS"}],
-            "repository": "repo"
-        }
+        metadata = {"platforms": [{"name": "InvalidOS"}], "repository": "repo"}
         with self.assertRaises(ValueError):
             _ = get_role_dependency_supported_oses(metadata)
 
@@ -110,12 +109,14 @@ class TestRoleDependencies(TestCase):
             "role_name": "role",
             "namespace": "user",
             "repository": "foo",
-            "repository_status": "bar"
+            "repository_status": "bar",
         }
         r = get_role_dependency_status(metadata)
 
-        expected = "<a href=\"foo\" title=\"user.role's repository\" target=" \
-                   "\"_blank\"><img src=\"bar\" /></a>"
+        expected = (
+            '<a href="foo" title="user.role\'s repository" target='
+            '"_blank"><img src="bar" /></a>'
+        )
 
         self.assertEqual(r, expected)
 
@@ -125,7 +126,7 @@ class TestRoleDependencies(TestCase):
         """
         metadata = {"repository_status": "foo"}
         r = get_role_dependency_status(metadata)
-        self.assertEqual(r, "<img src=\"foo\" />")
+        self.assertEqual(r, '<img src="foo" />')
 
     def test_get_role_dependency_status_unavailable_status(self):
         """

@@ -55,9 +55,7 @@ def check_file_exists(path: str) -> bool:
 
 
 def list_files(
-    path: str,
-    pattern: Optional[str] = "*",
-    absolute_path: Optional[bool] = False
+    path: str, pattern: Optional[str] = "*", absolute_path: Optional[bool] = False
 ) -> List[Tuple[str, datetime]]:
     """
     Lists files in a directory and returns name, datetime
@@ -75,7 +73,7 @@ def list_files(
     return [
         (
             x.name if not absolute_path else str(x.resolve()),
-            datetime.fromtimestamp(x.stat().st_ctime)
+            datetime.fromtimestamp(x.stat().st_ctime),
         )
         for x in p
         if x.is_file()
@@ -86,7 +84,7 @@ def copy_file(
     src: str,
     destination: str,
     new_content: Optional[str] = None,
-    is_json: Optional[bool] = False
+    is_json: Optional[bool] = False,
 ) -> None:
     """
     Copies file, optionally adds new content.
@@ -118,8 +116,7 @@ def copy_file(
     if new_content:
         with open(destination, "w", encoding="utf-8") as f:
             if is_json:
-                json.dump(
-                    json.loads(new_content), f, ensure_ascii=False, indent=2)
+                json.dump(json.loads(new_content), f, ensure_ascii=False, indent=2)
             else:
                 f.write(new_content)
 
@@ -188,7 +185,7 @@ def walk_gitignore(p: Union[Path, str], files_to_ignore: List[str]) -> None:
     list as well.
 
     Args:
-        p (Union[Path, str]): 
+        p (Union[Path, str]):
         files_to_ignore (List[str]): list of files
     """
     p_path = Path(p)
@@ -197,15 +194,13 @@ def walk_gitignore(p: Union[Path, str], files_to_ignore: List[str]) -> None:
         files_to_ignore.append(p_path.resolve())
     elif p_path.is_dir():
         if p.endswith("/") or p.endswith("\\"):
-            files_to_ignore.extend([
-                Path(to_ignore).resolve()
-                for to_ignore in glob.glob(p + "*")
-            ])
+            files_to_ignore.extend(
+                [Path(to_ignore).resolve() for to_ignore in glob.glob(p + "*")]
+            )
         else:
-            files_to_ignore.extend([
-                Path(to_ignore).resolve()
-                for to_ignore in glob.glob(p + "/*")
-            ])
+            files_to_ignore.extend(
+                [Path(to_ignore).resolve() for to_ignore in glob.glob(p + "/*")]
+            )
     else:
         for subdir in glob.glob(p):
             walk_gitignore(subdir, files_to_ignore)

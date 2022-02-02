@@ -3,21 +3,19 @@ import sys
 from ansibler.args.cmd import get_user_arguments
 from ansibler.compatibility.chart import generate_compatibility_chart
 from ansibler.platforms.populate import populate_platforms, read_json_file
-from ansibler.role_dependencies.dependencies import (
-    generate_role_dependency_chart
-)
+from ansibler.role_dependencies.dependencies import generate_role_dependency_chart
 from ansibler.role_dependencies.cache import clear_cache
 from ansibler.utils.files import check_file_exists
 from ansibler.utils.help import display_help
 
 
 def main() -> None:
-    """ Entry point for the script """
+    """Entry point for the script"""
     run_ansibler()
 
 
 def run_ansibler() -> None:
-    """ Ansibler """
+    """Ansibler"""
     # Get CMD args
     args = get_user_arguments()
 
@@ -31,14 +29,12 @@ def run_ansibler() -> None:
     # Run generate compatibility charts
     if "generate-compatibility-chart" in args:
         molecule_results_dir = args.get("molecule-results-dir")
-        generate_compatibility_chart(
-            molecule_results_dir, json_file=json_file)
+        generate_compatibility_chart(molecule_results_dir, json_file=json_file)
     elif "populate-platforms" in args:
         platform_map = args.get("platform-map", None)
         populate_platforms(json_file=json_file, platform_map_file=platform_map)
     elif "role-dependencies" in args:
-        repository_status_template = args.get(
-            "repository-status-template", None)
+        repository_status_template = args.get("repository-status-template", None)
         variables = args.get("variables", None)
 
         # Read repo status template
@@ -62,7 +58,7 @@ def run_ansibler() -> None:
             generate_role_dependency_chart(
                 json_file=json_file,
                 template=repository_status_template,
-                variables=variables
+                variables=variables,
             )
         )
     else:

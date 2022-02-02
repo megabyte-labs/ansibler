@@ -30,8 +30,7 @@ def read_roles_metadata_from_cache() -> Dict[str, Any]:
 
 
 def cache_roles_metadata(
-    roles_path: List[str],
-    current_cache: Optional[Dict[str, Any]] = {}
+    roles_path: List[str], current_cache: Optional[Dict[str, Any]] = {}
 ) -> Dict[str, Any]:
     # TODO: TESTS
     # Create cache folder if it does not exist
@@ -47,8 +46,7 @@ def cache_roles_metadata(
             role_name = get_role_name(role_path, meta_file_path)
 
             try:
-                cache_single_role_metadata(
-                    meta_file_path, role_path, role_name, cache)
+                cache_single_role_metadata(meta_file_path, role_path, role_name, cache)
             except:
                 pass
 
@@ -88,9 +86,11 @@ def cache_single_role_metadata(
         print(err_msg)
         raise MetaYMLError(err_msg)
 
-    if "role_name" not in galaxy_info or \
-        "author" not in galaxy_info or \
-        "description" not in galaxy_info:
+    if (
+        "role_name" not in galaxy_info
+        or "author" not in galaxy_info
+        or "description" not in galaxy_info
+    ):
         print(err_msg)
         raise MetaYMLError(err_msg)
 
@@ -101,16 +101,14 @@ def cache_single_role_metadata(
         "description": galaxy_info.get("description"),
         "platforms": galaxy_info.get("platforms", []),
         "repository": galaxy_info.get("repository", None),
-        "repository_status": galaxy_info.get("repository_status", None)
+        "repository_status": galaxy_info.get("repository_status", None),
     }
 
     # Append to cache
     cache[role_name] = metadata
 
 
-def append_role_to_cache(
-    role_name: str, metadata: str, cache: Dict[str, Any]
-) -> None:
+def append_role_to_cache(role_name: str, metadata: str, cache: Dict[str, Any]) -> None:
     # TODO: TESTS
     # Append to cache
     cache[role_name] = metadata

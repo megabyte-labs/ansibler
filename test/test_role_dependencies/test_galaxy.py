@@ -16,7 +16,7 @@ class TestGalaxy(TestCase):
             "role_name": "snapd",
             "description": "Ensures Snap is installed",
             "repository": None,
-            "repository_status": None
+            "repository_status": None,
         }
 
         self.assertDictEqual(role, expected)

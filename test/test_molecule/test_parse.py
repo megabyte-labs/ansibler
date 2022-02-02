@@ -5,7 +5,7 @@ from ansibler.molecule_test.parse import (
     parse_play_recap,
     parse_os,
     parse_recap_value,
-    OK_COUNT_PATTERN
+    OK_COUNT_PATTERN,
 )
 
 
@@ -24,12 +24,14 @@ class TestParseMolecule(TestCase):
         Test parse play recap
 
         Args:
-            mock_parse_play_recap_dump (Mock): parse play recap dump mock 
+            mock_parse_play_recap_dump (Mock): parse play recap dump mock
         """
-        play_recap = "Debian-10: ok=16 changed=0 unreachable=0 failed=0 " \
-                     "skipped=4 rescued=0 ignored=0\nUbuntu-20.04: ok=16 " \
-                     "changed=0 unreachable=0 failed=0 skipped=4 rescued=0 " \
-                     "ignored=0"
+        play_recap = (
+            "Debian-10: ok=16 changed=0 unreachable=0 failed=0 "
+            "skipped=4 rescued=0 ignored=0\nUbuntu-20.04: ok=16 "
+            "changed=0 unreachable=0 failed=0 skipped=4 rescued=0 "
+            "ignored=0"
+        )
         mock_parse_play_recap_dump.return_value = play_recap
 
         res = parse_play_recap(play_recap)
@@ -40,11 +42,11 @@ class TestParseMolecule(TestCase):
             "failed": 0,
             "skipped": 4,
             "rescued": 0,
-            "ignored": 0
+            "ignored": 0,
         }
         expected_recap = [
             {"os_name": "Debian", "os_version": "10", **expected_recap},
-            {"os_name": "Ubuntu", "os_version": "20.04", **expected_recap}
+            {"os_name": "Ubuntu", "os_version": "20.04", **expected_recap},
         ]
 
         self.assertEqual(res, expected_recap)

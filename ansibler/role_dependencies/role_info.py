@@ -9,10 +9,12 @@ def get_role_name(role_path: str, meta_file_path: str) -> str:
     Returns:
         str: role name.
     """
-    return meta_file_path \
-        .replace("meta/main.yml", "") \
-        .replace(role_path, "") \
-        .strip("/").split("/")[-1]
+    return (
+        meta_file_path.replace("meta/main.yml", "")
+        .replace(role_path, "")
+        .strip("/")
+        .split("/")[-1]
+    )
 
 
 def get_role_name_from_req_file(base_path: str, req_file_path: str) -> str:
@@ -26,10 +28,9 @@ def get_role_name_from_req_file(base_path: str, req_file_path: str) -> str:
     Returns:
         str: role name.
     """
-    return req_file_path \
-        .replace("requirements.yml", "") \
-        .replace(base_path, "") \
-        .strip("/")
+    return (
+        req_file_path.replace("requirements.yml", "").replace(base_path, "").strip("/")
+    )
 
 
 def get_role_full_path(role_path: str, role_name: str) -> str:

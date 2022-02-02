@@ -5,14 +5,14 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from ansibler.platforms.platform_map import (
     parse_platform_map,
-    map_to_galaxy_supported_platforms
+    map_to_galaxy_supported_platforms,
 )
 from ansibler.utils.files import create_folder_if_not_exists
 
 
 def populate_platforms(
     json_file: Optional[str] = "./ansibler.json",
-    platform_map_file: Optional[str] = None
+    platform_map_file: Optional[str] = None,
 ) -> None:
     # TODO: TESTS
     # Read from package.json
@@ -30,10 +30,7 @@ def populate_platforms(
         if "✅" in platform[2]:
             version = get_formatted_os_version(platform[0], platform[1])
 
-            platforms.append({
-                "name": platform[0],
-                "versions": [version]
-            })
+            platforms.append({"name": platform[0], "versions": [version]})
 
             supported.append(os)
         else:
@@ -44,8 +41,7 @@ def populate_platforms(
     galaxy_info = meta_main.get("galaxy_info", {})
 
     old_platforms = galaxy_info.get("platforms", [])
-    platforms = merge_platforms(
-        platforms, old_platforms, supported, unsupported)
+    platforms = merge_platforms(platforms, old_platforms, supported, unsupported)
     platforms = join_platforms(platforms)
 
     galaxy_info["platforms"] = platforms if platforms else None
@@ -85,7 +81,7 @@ def merge_platforms(
     current_platforms: List[Dict[str, Any]],
     old_platforms: List[Dict[str, Any]],
     supported: List[str],
-    unsupported: List[str]
+    unsupported: List[str],
 ) -> List[Dict[str, Any]]:
     """
     Merge platforms from package.json's blueprint.compatibility and
@@ -123,16 +119,17 @@ def merge_platforms(
                     cur_name = current_platform.get("name")
                     if cur_name == name:
                         cur_versions = current_platform.get("versions", [])
-                        cur_versions.append(
-                            get_formatted_os_version(name, version))
+                        cur_versions.append(get_formatted_os_version(name, version))
                         supported.append(os)
                         added = True
 
                 if not added:
-                    res.append({
-                        "name": name,
-                        "versions": [get_formatted_os_version(name, version)]
-                    })
+                    res.append(
+                        {
+                            "name": name,
+                            "versions": [get_formatted_os_version(name, version)],
+                        }
+                    )
                     supported.append(os)
 
     return res
@@ -157,13 +154,12 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         versions = sorted(list(set(platform.get("versions", []))))
 
         if name not in added_names:
-            res.append({
-                "name": name.split(" ")[0],
-                "versions": [
-                    get_formatted_os_version(name, v)
-                    for v in versions
-                ]
-            })
+            res.append(
+                {
+                    "name": name.split(" ")[0],
+                    "versions": [get_formatted_os_version(name, v) for v in versions],
+                }
+            )
             added_names.append(name.split(" ")[0])
         else:
             for p in res:
@@ -173,9 +169,9 @@ def join_platforms(platforms: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
                     for version in versions:
                         if version not in added_versions:
                             added_versions.append(
-                                get_formatted_os_version(name, version))
-                            p["versions"] = sorted(
-                                added_versions, key=lambda x: str(x))
+                                get_formatted_os_version(name, version)
+                            )
+                            p["versions"] = sorted(added_versions, key=lambda x: str(x))
 
     return res
 
@@ -191,13 +187,17 @@ def get_formatted_os_version(os: str, version: str) -> Union[float, int, str]:
             return float(version)
         else:
             return int(version)
-    elif isinstance(version, str) and \
-        not version.replace(".", "", 1).isnumeric():
+    elif isinstance(version, str) and not version.replace(".", "", 1).isnumeric():
         if os.lower() == "ubuntu" and "(" in version:
             return version.split("(")[-1].split(" ")[0].lower()
         elif "(" in version:
-            return version.split("(")[1] \
-                .split(" ")[0].split("-")[0].lower().replace(")", "")
+            return (
+                version.split("(")[1]
+                .split(" ")[0]
+                .split("-")[0]
+                .lower()
+                .replace(")", "")
+            )
         return version
     else:
         version_ceil = math.ceil(float(version))

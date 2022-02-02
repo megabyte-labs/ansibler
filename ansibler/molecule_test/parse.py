@@ -11,9 +11,9 @@ PLAY_FINISH_PATTERN = r"INFO(\s)+(.*)"
 PLAY_NAME_PATTERN = r"INFO\s+Running.*>\s*(\w.*)"
 
 PLAY_RECAP_OS_NAME_PATTERN = r"^\s?[^\s]*"
-PLAY_RECAP_PARALLEL_OS_ID_PATTERN = \
-    r"-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-" \
-    r"[A-Za-z0-9]{12}"
+PLAY_RECAP_PARALLEL_OS_ID_PATTERN = (
+    r"-[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-" r"[A-Za-z0-9]{12}"
+)
 
 OK_COUNT_PATTERN = r"ok=(\d*)"
 CHANGED_COUNT_PATTERN = r"changed=(\d*)"
@@ -38,20 +38,21 @@ def parse_test(test: str) -> Dict[str, Any]:
     # Scan text in test for first ocurrence of PLAY [Converge]
     # (This is where the role first starts installing the first time around)
     converge_index = scan_molecule_results(
-        test, scan_for=CONVERGE_START_PATTERN, start_from=0)
+        test, scan_for=CONVERGE_START_PATTERN, start_from=0
+    )
 
     # (This is where the role first starts installing the first time around)
     converge_recap_start = scan_molecule_results(
-        test, scan_for=PLAY_RECAP_PATTERN, start_from=converge_index)
+        test, scan_for=PLAY_RECAP_PATTERN, start_from=converge_index
+    )
 
     converge_recap_end = scan_molecule_results(
-        test, scan_for="\n\n", start_from=converge_recap_start)
+        test, scan_for="\n\n", start_from=converge_recap_start
+    )
 
     # Extract section
     parsed_test["converge"] = {
-        "play_recap": parse_play_recap(
-            test[converge_recap_start:converge_recap_end]
-        )
+        "play_recap": parse_play_recap(test[converge_recap_start:converge_recap_end])
     }
 
     # For idempotency column, continue in text until you see PLAY [Converge]
@@ -67,10 +68,12 @@ def parse_test(test: str) -> Dict[str, Any]:
     # If another [Converge] section was found...
     # Go to next occurrence of PLAY RECAP
     idempotency_recap_start = scan_molecule_results(
-        test, scan_for=PLAY_RECAP_PATTERN, start_from=idempotency_index)
+        test, scan_for=PLAY_RECAP_PATTERN, start_from=idempotency_index
+    )
 
     idempotency_recap_end = scan_molecule_results(
-        test, scan_for="\n\n", start_from=idempotency_recap_start)
+        test, scan_for="\n\n", start_from=idempotency_recap_start
+    )
 
     # Extract section
     parsed_test["idempotence"] = {
@@ -84,9 +87,7 @@ def parse_test(test: str) -> Dict[str, Any]:
 
 
 def scan_molecule_results(
-    results: str,
-    scan_for: str,
-    start_from: Optional[int] = 0
+    results: str, scan_for: str, start_from: Optional[int] = 0
 ) -> int:
     # Slice molecule results text
     results_substr = results[start_from:]
@@ -138,24 +139,19 @@ def parse_play_recap(play_dump: str) -> List[Dict[str, Any]]:
         if not os_name:
             continue
 
-        recap.append({
-            "os_name": os_name,
-            "os_version": os_version,
-            "ok": parse_recap_value(
-                OK_COUNT_PATTERN, recap_line),
-            "changed": parse_recap_value(
-                CHANGED_COUNT_PATTERN, recap_line),
-            "unreachable": parse_recap_value(
-                UNREACHABLE_COUNT_PATTERN, recap_line),
-            "failed": parse_recap_value(
-                FAILED_COUNT_PATTERN, recap_line),
-            "skipped": parse_recap_value(
-                SKIPPED_COUNT_PATTERN, recap_line),
-            "rescued": parse_recap_value(
-                RESCUED_COUNT_PATTERN, recap_line),
-            "ignored": parse_recap_value(
-                IGNORED_COUNT_PATTERN, recap_line)
-        })
+        recap.append(
+            {
+                "os_name": os_name,
+                "os_version": os_version,
+                "ok": parse_recap_value(OK_COUNT_PATTERN, recap_line),
+                "changed": parse_recap_value(CHANGED_COUNT_PATTERN, recap_line),
+                "unreachable": parse_recap_value(UNREACHABLE_COUNT_PATTERN, recap_line),
+                "failed": parse_recap_value(FAILED_COUNT_PATTERN, recap_line),
+                "skipped": parse_recap_value(SKIPPED_COUNT_PATTERN, recap_line),
+                "rescued": parse_recap_value(RESCUED_COUNT_PATTERN, recap_line),
+                "ignored": parse_recap_value(IGNORED_COUNT_PATTERN, recap_line),
+            }
+        )
 
     return recap
 

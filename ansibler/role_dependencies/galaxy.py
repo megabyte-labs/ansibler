@@ -40,7 +40,7 @@ def get_from_ansible_galaxy(role: str) -> Dict[str, Any]:
     return {
         "namespace": role_namespace,
         "role_name": role_name,
-        "description": description
+        "description": description,
     }
 
 
@@ -72,20 +72,20 @@ def build_ansible_galaxy_url(role_namespace: str, role_name: str) -> str:
         str: url
     """
     # TODO: tests
-    return f"{GALAXY_BASE}" \
-           f"?namespace={role_namespace}" \
-           f"&name={role_name}" \
-           f"&format=json"
+    return (
+        f"{GALAXY_BASE}"
+        f"?namespace={role_namespace}"
+        f"&name={role_name}"
+        f"&format=json"
+    )
 
 
-def get_role_description_from_galaxy_response(
-    response: requests.Response
-) -> str:
+def get_role_description_from_galaxy_response(response: requests.Response) -> str:
     """
     Extract description for a role from galaxy response
 
     Args:
-        response (requests.Response): response from ansible galaxy (json body) 
+        response (requests.Response): response from ansible galaxy (json body)
 
     Returns:
         str: description
@@ -97,6 +97,4 @@ def get_role_description_from_galaxy_response(
         data = {}
 
     # description is in .data.repository.description
-    return data.get("data", {}) \
-        .get("repository", {}) \
-        .get("description", None)
+    return data.get("data", {}).get("repository", {}).get("description", None)

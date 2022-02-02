@@ -2,7 +2,10 @@ from unittest import TestCase
 import pathlib
 import shutil
 from ansibler.utils.files import (
-    check_folder_exists, copy_file, create_folder_if_not_exists, list_files
+    check_folder_exists,
+    copy_file,
+    create_folder_if_not_exists,
+    list_files,
 )
 
 
