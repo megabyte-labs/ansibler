@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 setup(
     name="ansibler",
     packages=find_packages(),
-    version="0.2.4",
     license="MIT",
     description="Generate JSON data that describes the dependencies of an "
     "Ansible playbook/role. Also, automatically generate OS compatibil"
