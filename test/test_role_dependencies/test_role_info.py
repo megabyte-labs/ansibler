@@ -13,7 +13,7 @@ class TestRoleInfo(TestCase):
         """
         role = get_role_name(
             "/home/user/projects/Playbooks/roles/system",
-            "/home/user/projects/Playbooks/roles/system/snapd/meta/main.yml"
+            "/home/user/projects/Playbooks/roles/system/snapd/meta/main.yml",
         )
         self.assertEqual(role, "snapd")
 
@@ -23,7 +23,7 @@ class TestRoleInfo(TestCase):
         """
         role = get_role_name_from_req_file(
             "/home/user/projects/Playbooks/roles/system",
-            "/home/user/projects/Playbooks/roles/system/snapd/requirements.yml"
+            "/home/user/projects/Playbooks/roles/system/snapd/requirements.yml",
         )
         self.assertEqual(role, "snapd")
 
@@ -32,6 +32,6 @@ class TestRoleInfo(TestCase):
         Test get role full path
         """
         role_path = get_role_full_path(
-            "/home/user/projects/Playbooks/roles/system", "snapd")
-        self.assertEqual(
-            role_path, "/home/user/projects/Playbooks/roles/system/snapd")
+            "/home/user/projects/Playbooks/roles/system", "snapd"
+        )
+        self.assertEqual(role_path, "/home/user/projects/Playbooks/roles/system/snapd")

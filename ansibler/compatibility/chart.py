@@ -6,11 +6,11 @@ import json
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from ansibler.utils.files import (
-    check_folder_exists, create_folder_if_not_exists, list_files
+    check_folder_exists,
+    create_folder_if_not_exists,
+    list_files,
 )
-from ansibler.exceptions.ansibler import (
-    MoleculeTestParseError, MoleculeTestsNotFound
-)
+from ansibler.exceptions.ansibler import MoleculeTestParseError, MoleculeTestsNotFound
 from ansibler.molecule_test.parse import parse_test
 
 
@@ -20,7 +20,7 @@ FILTER_FILES_PATTERN = r"\d{4}-\d{2}-\d{2}-.*.txt"
 
 def generate_compatibility_chart(
     molecule_results_dir: Optional[str] = MOLECULE_RESULTS_DIR,
-    json_file: Optional[str] = "./ansibler.json"
+    json_file: Optional[str] = "./ansibler.json",
 ) -> None:
     # TODO: TESTS
     # Check molecule-results dir exists
@@ -54,10 +54,10 @@ def generate_compatibility_chart(
             play_recap = converge.get("play_recap", [])
             for recap in play_recap:
                 os_name, recap_summary = get_play_recap_summary(
-                    recap, idempotence, test_date)
+                    recap, idempotence, test_date
+                )
 
-                if os_name in temp_compat and \
-                    test_date < temp_compat[os_name]["added"]:
+                if os_name in temp_compat and test_date < temp_compat[os_name]["added"]:
                     continue
 
                 temp_compat[os_name] = recap_summary
@@ -82,9 +82,7 @@ def generate_compatibility_chart(
     data["compatibility_matrix"] = compat
 
     # Create output path if not exists
-    create_folder_if_not_exists(
-        json_file.replace(os.path.basename(json_file), "")
-    )
+    create_folder_if_not_exists(json_file.replace(os.path.basename(json_file), ""))
 
     # Save
     with open(json_file, "w") as f:
@@ -106,9 +104,7 @@ def get_test_file_date(test_file_name) -> datetime:
     return datetime.fromisoformat(basename[:10])
 
 
-def read_molecule_tests(
-    test_file: str
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def read_molecule_tests(test_file: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """
     Reads converge and idempotence tests from a test file.
 
@@ -157,13 +153,12 @@ def get_play_recap_summary(
         "os_version": os_version,
         "success": success,
         "idempotent": idempotent,
-        "added": test_date
+        "added": test_date,
     }
 
 
 def did_play_succeed(
-    recap: Dict[str, Any],
-    idempotency_play: Optional[bool] = False
+    recap: Dict[str, Any], idempotency_play: Optional[bool] = False
 ) -> bool:
     """
     Checks if a play succeeded.
@@ -187,9 +182,7 @@ def did_play_succeed(
     return ok > 0 and failed == 0 and unreachable == 0
 
 
-def is_idempotent(
-    recap: Dict[str, Any], idempotence_test: Dict[str, Any]
-) -> bool:
+def is_idempotent(recap: Dict[str, Any], idempotence_test: Dict[str, Any]) -> bool:
     """
     Checks if a test was idempotent.
 
@@ -206,7 +199,7 @@ def is_idempotent(
     if not idempotence_results:
         return None
 
-    recap_os_name =  recap.get("os_name")
+    recap_os_name = recap.get("os_name")
     recap_os_version = recap.get("os_version")
 
     for result in idempotence_results:
@@ -237,13 +230,15 @@ def add_items_to_blueprint_compatibility(
         else:
             idempotent = "❌"
 
-        compat.append([
-            data["os_family"],
-            data["os_version"],
-            f"<div align=\"center\">{'✅' if data['success'] else '❌'}</div>",
-            f"<div align=\"center\">{idempotent}</div>",
-            custom_strftime("%B {S}, %Y", data["added"])
-        ])
+        compat.append(
+            [
+                data["os_family"],
+                data["os_version"],
+                f"<div align=\"center\">{'✅' if data['success'] else '❌'}</div>",
+                f'<div align="center">{idempotent}</div>',
+                custom_strftime("%B {S}, %Y", data["added"]),
+            ]
+        )
 
 
 def custom_strftime(format: str, t: datetime) -> str:
@@ -257,7 +252,7 @@ def custom_strftime(format: str, t: datetime) -> str:
     Returns:
         (str): formatted datetime
     """
-    return t.strftime(format).replace('{S}', str(t.day) + suffix(t.day))
+    return t.strftime(format).replace("{S}", str(t.day) + suffix(t.day))
 
 
 def suffix(d: int) -> str:
@@ -274,4 +269,4 @@ def suffix(d: int) -> str:
     if 11 <= d <= 13:
         return "th"
     else:
-        return { 1: "st", 2: "nd", 3: "rd"}.get(d % 10, "th")
+        return {1: "st", 2: "nd", 3: "rd"}.get(d % 10, "th")

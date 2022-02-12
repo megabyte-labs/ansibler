@@ -1,28 +1,107 @@
-# Ansibler
+<!-- ⚠️ This README has been generated from the file(s) ".config/docs/blueprint-readme-cli.md" ⚠️--><div align="center">
+  <center>
+    <a href="https://github.com/ProfessorManhattan/ansibler">
+      <img width="148" height="148" alt="Ansibler logo" src="https://gitlab.com/megabyte-labs/python/cli/ansibler/-/raw/master/logo.png" />
+    </a>
+  </center>
+</div>
+<div align="center">
+  <center><h1 align="center">Python CLI: Ansibler - Compatibility Data Tool for Ansible<i></i></h1></center>
+  <center><h4 style="color: #18c3d1;">A Python CLI created by <a href="https://megabyte.space" target="_blank">Megabyte Labs</a></h4><i></i></center>
+</div>
 
-Ansibler should support the following parameters:
+<div align="center">
+  <a href="https://megabyte.space" title="Megabyte Labs homepage" target="_blank">
+    <img alt="Homepage" src="https://img.shields.io/website?down_color=%23FF4136&down_message=Down&label=Homepage&logo=home-assistant&logoColor=white&up_color=%232ECC40&up_message=Up&url=https%3A%2F%2Fmegabyte.space&style=for-the-badge" />
+  </a>
+  <a href="https://github.com/ProfessorManhattan/ansibler/blob/master/docs/CONTRIBUTING.md" title="Learn about contributing" target="_blank">
+    <img alt="Contributing" src="https://img.shields.io/badge/Contributing-Guide-0074D9?logo=github-sponsors&logoColor=white&style=for-the-badge" />
+  </a>
+  <a href="https://app.slack.com/client/T01ABCG4NK1/C01NN74H0LW/details/" title="Chat with us on Slack" target="_blank">
+    <img alt="Slack" src="https://img.shields.io/badge/Slack-Chat-e01e5a?logo=slack&logoColor=white&style=for-the-badge" />
+  </a>
+  <a href="https://github.com/ProfessorManhattan/ansibler" title="GitHub mirror" target="_blank">
+    <img alt="GitHub" src="https://img.shields.io/badge/Mirror-GitHub-333333?logo=github&style=for-the-badge" />
+  </a>
+  <a href="https://gitlab.com/megabyte-labs/python/cli/ansibler" title="GitLab repository" target="_blank">
+    <img alt="GitLab" src="https://img.shields.io/badge/Repo-GitLab-fc6d26?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAAHJJREFUCNdNxKENwzAQQNEfWU1ZPUF1cxR5lYxQqQMkLEsUdIxCM7PMkMgLGB6wopxkYvAeI0xdHkqXgCLL0Beiqy2CmUIdeYs+WioqVF9C6/RlZvblRNZD8etRuKe843KKkBPw2azX13r+rdvPctEaFi4NVzAN2FhJMQAAAABJRU5ErkJggg==&style=for-the-badge" />
+  </a>
+</div>
+<br/>
+<div align="center">
+  <a title="Version: 0.2.4" href="https://github.com/ProfessorManhattan/ansibler" target="_blank">
+    <img alt="Version: 0.2.4" src="https://img.shields.io/badge/version-0.2.4-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAACNJREFUCNdjIACY//+BEp9hhM3hAzYQwoBIAqEDYQrCZLwAAGlFKxU1nF9cAAAAAElFTkSuQmCC&cacheSeconds=2592000&style=flat-square" />
+  </a>
+  <a title="Build status on GitLab" href="https://gitlab.com/megabyte-labs/python/cli/ansibler/-/commits/master" target="_blank">
+    <img alt="GitLab build status" src="https://img.shields.io/gitlab/pipeline-status/megabyte-labs/python/cli/ansibler?branch=master&label=build&logo=gitlab&style=flat-square">
+  </a>
+  <a title="Test coverage report" href="https://gitlab.com/megabyte-labs/python/cli/ansibler/-/commits/master" target="_blank">
+    <img alt="Coverage status" src="https://img.shields.io/gitlab/coverage/megabyte-labs/python/cli/ansibler/master/?label=coverage&logo=pytest&style=flat-square">
+  </a>
+  <a title="Documentation" href="https://megabyte.space/docs/python" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg?logo=readthedocs&style=flat-square" />
+  </a>
+  <a title="Supported Python versions" href="https://pypi.org/project/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}/" target="_blank">
+    <img alt="Python versions" src="https://img.shields.io/pypi/pyversions/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}/?label=python&logo=python&style=flat-square">
+  </a>
+  <a title="PyPi status" href="https://pypi.org/project/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}/" target="_blank">
+    <img alt="Status" src="https://img.shields.io/pypi/status/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}/?label=status&logo=pypi&style=flat-square">
+  </a>
+  <a title="License: MIT" href="https://github.com/ProfessorManhattan/ansibler/blob/master/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAAHpJREFUCNdjYOD/wMDAUP+PgYHxhzwDA/MB5gMM7AwMDxj4GBgKGGQYGCyAEEgbMDDwAAWAwmk8958xpIOI5zKH2RmOyhxmZjguAiKmgIgtQOIYmFgCIp4AlaQ9OczGkJYCJEAGgI0CGwo2HmwR2Eqw5SBnNIAdBHYaAJb6KLM15W/CAAAAAElFTkSuQmCC&style=flat-square" />
+  </a>
+</div>
 
-* **--generate-compatibility-chart** - (e.g. `ansibler --generate-compatibility-chart`) This command should generate a piece of data stored in `package.json` under `blueprint.compatibility` that details the supported OSes.
-* **--populate-platforms** - (e.g. `ansibler --populate-platforms`) This command should populate the platforms variable in the `galaxy_info` of `meta/main.yml`. If `meta/main.yml` is missing then output an error message that says `meta/main.yml` is missing.
-* **--role-dependencies** - (e.g. `ansibler --role-dependencies`) This command should generate a chart with useful information about the dependencies of the role/playbook.
+> </br><h4 align="center">**Generate JSON data that describes the dependencies of an Ansible playbook/role. Also, automatically generate OS compatibility charts using Molecule.**</h4></br>
 
-## Generating the Compatibility Chart
+<!--TERMINALIZE![terminalizer_title](repository.group.python_cli/ansibler* **github**: /raw/master/docs/demo.gif
+* **gitlab**: /-/raw/master/docs/demo.gif)TERMINALIZE-->
 
-The compatibility chart should be generated using information from two different sources:
+<a href="#table-of-contents" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
 
-* The test results in the `.molecule-results` folder
-* `tasks/main.yml`
+## Table of Contents
 
-The test results in the `.molecule-results` folder should all be Molecule test results that come from running the command `molecule test` command in each role. You can generate some sample data by cloning the Playbooks repository, navigating to a role (e.g. `/roles/tools/nmap`), installing the requirements (e.g. pip3 install -r requirements.txt), and then running `PY_COLORS=0 molecule test > .molecule-results/2021-05-01-tagname.txt`. You will need Docker/VirtualBox installed depending on the scenario you choose to run. `molecule test` uses the scenario in `molecule/default`. If you want to run it with Docker instead of VirtualBox, you can run `molecule test -s docker-snap` or `molecule test -s docker`. Each scenario correponds to a folder in the `molecule/` folder.
+- [Overview](#overview)
+- [Usage](#usage)
+  - [Generating Compatibility Charts](#generating-compatibility-charts)
+  - [Populating Platforms](#populating-platforms)
+  - [Role Dependency Charts](#role-dependency-charts)
+- [Additional Info](#additional-info)
+  - [Caching](#caching)
+  - [Overriding ansibler.json and meta/main.yml](#overriding-ansiblerjson-and-metamainyml)
+  - [Help](#help)
+- [Installation](#installation)
+  - [PyPi](#pypi)
+  - [Install Doctor](#install-doctor)
+  - [Homebrew](#homebrew)
+  - [Chocolatey](#chocolatey)
+  - [Binary Releases](#binary-releases)
+- [Requirements](#requirements)
+- [Contributing](#contributing)
+- [License](#license)
 
-After you generate a couple log files by piping the ouput of `molecule test` to a txt file, you can then inspect the results to get a feel for which tests successfully installed the software and which tests passed the Idempotency test. Please reach out to me if you have any questions about this. When running the tests and saving the data, ensure to put PY_COLORS=0 at the beginning of the command so the colors are stripped.
+<a href="#overview" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
 
-During your testing, populate the `.molecule-results/` folder with a couple tests. Name each test `YEAR-MONTH-DAY-scenario_tag.txt`.
+## Overview
 
-After you have some sample data ready, `ansibler --generate-compatibility-chart` should scan each of the results in the `.molecule-results/` folder and grab the result for the most recent test of each operating system. It is necessary to do it like this because no test will cover all OSes at the same time. One test might test Windows, another all the Linux systems, and another MacOSX. Ensure to first grab whether or not something successfully installed and then, if the test includes a Idempotency test, then grab that information too. With all the information gathered, you should be able to add a variable to `package.json` under `blueprint.compatibility` that looks something like this:
+**Ansibler** is a CLI tool meant to accompany Ansible project's that wish to convey accurate information to the public. In an Ansibler workflow, instead of marking every platform as `all` in `meta/main.yml`, we first run Molecule tests and save the logs. Ansibler can take the logs and do a few cool things with them. It generates compatibility chart data in JSON format that you can embed in the `README.md` with [@appnest/readme](https://www.npmjs.com/package/@appnest/readme). After that, you can use Ansibler to automatically generate **accurate** `meta/main.yml` platform data.
+
+<a href="#usage" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Usage
+
+With Ansibler, you can extract both role dependencies and OS compatibility data with the help of [Molecule Tests](https://molecule.readthedocs.io/en/latest/).
+
+### Generating Compatibility Charts
+
+Say you have run `molecule test` and want to generate updated compatibility charts for your role using the test's output. With Ansibler, it's possible to do just that!
+
+1. Start by dumping the results of your test to `./.molecule-results/YEAR-MONTH-DAY-scenario_tag.txt`. You can do that by running: `PY_COLORS=0 molecule test > .molecule-results/2021-08-07-docker-snap.txt` (make sure to put PY_COLORS=0 at the beginning of the command so the colors are stripped).
+
+2. Then, simply run `ansibler --generate-compatibility-chart` and a new `ansibler.json` will be generated, which will have your brand new compatibility chart under `compatibility_matrix`. It will look something like this:
 
 ```
-"compatibility": [
+"compatibility_matrix": [
     ["OS Family", "OS Version", "Status", "Idempotent", "Tested On"],
     ["Fedora", "33", "❌", "❌", "April 4th, 2006"],
     ["Ubuntu", "focal", "✅", "❌", "February 5th, 2009"],
@@ -30,157 +109,190 @@ After you have some sample data ready, `ansibler --generate-compatibility-chart`
   ],
 ```
 
-### `tasks/main.yml`
+_TIP:_ Don't like the `.molecule-results` dir? No problem. You can tell Ansibler to use another directory by passing `--molecule-results-dir` - example:
 
-For now, skip this part of the project. I am just adding details here in case you're interested in prepping for the future. All of the Ansible roles in the Playbooks repository are made so that they successfully can run against any system. However, some of them do not execute logic on certain systems. We need to filter out the compatibility chart so that it only contains data about the operating systems that the role is meant to run against. Taking the above `compatibility` JSON as an example. If we had a `tasks/main.yml` file that looked like this:
+`ansibler --generate-compatibility-chart --molecule-results-dir molecule/.results`
 
-```
-- name: Execute logic
-  include: task.yml
-  when: ansible_os_family == 'Windows'
-```
+### Populating Platforms
 
-Then the compatibility chart data above should be stripped of the entries that contain the operating systems that do not run any logic. There are ways we can make this easier to implement so hold off on this section for now.
-
-## Populating Platforms in `meta/main.yml`
-
-When the user runs `ansibler --populate-platforms`, Ansibler should use information from the `blueprint.compatibility` data in `package.json` to determine the platforms that the role supports. The script should look at the `blueprint.compatibility` variable in `package.json`. The variable will look something like this:
+You can also update your role's `meta/main.yml` so that `galaxy_info.platforms` matches the new `compatibility_matrix` chart. Simply run the following:
 
 ```
-"compatibility": [
-    ["OS Family", "OS Version", "Status", "Idempotent", "Tested On"],
-    ["Fedora", "33", "❌", "❌", "April 4th, 2006"],
-    ["Ubuntu", "focal", "✅", "❌", "February 5th, 2009"],
-    ["Windows", "10", "✅"", "✅"", "January 6th 2020"]
-  ],
+ansibler --populate-platforms
 ```
 
-And will ultimately be included in the README.md in the following format:
+### Role Dependency Charts
 
-| OS Family | OS Version | Status | Idempotent | Tested On          |
-|-----------|------------|--------|------------|--------------------|
-| Fedora    | 33         | ❌     | ❌          | April 4th, 2006    |
-| Ubuntu    | focal      | ✅     | ❌          | February 5th, 2009 |
-| Windows   | 10         | ✅     | ✅          | January 6th, 2020  |
-
-With the chart above, the platforms in galaxy_info (located in `meta/main.yml`) should be (NOTE: Fedora is missing):
+Finally, you can also add dependency data to your role's `ansibler.json` file. Simply run:
 
 ```
-  platforms:
-    - name: Ubuntu
-      versions:
-        - focal
-    - name: Windows
-      versions:
-        - all
+ansibler --role-dependencies
 ```
 
-Windows is special because even though it is version 10, we mark it as all in the platforms variable.
-
-## Generating Role Dependency Charts
-
-Regardless of whether the project is a role or playbook, the following logic is used at first:
-
-1. Acquires an array of `roles_path` paths by running `ansible-config dump` and then acquiring the array of paths. The value in the paths variable in the dump should look something like this: `DEFAULT_ROLES_PATH(/Users/MyUser/Playbooks/ansible.cfg) = ['/Users/MyUser/Playbooks/roles/applications', '/Users/MyUser/Playbooks/roles/crypto', '/Users/MyUser/Playbooks/roles/helpers', '/Users/MyUser/Playbooks/roles/languages', '/Users/MyUser/Playbooks/roles/misc', '/Users/MyUser/Playbooks/roles/services', '/Users/MyUser/Playbooks/roles/system', '/Users/MyUser/Playbooks/roles/tools', '/Users/MyUser/Playbooks/roles/virtualization', '/Users/MyUser/.ansible/roles', '/usr/share/ansible/roles', '/etc/ansible/roles']`
-2. Creates a cached map of the important meta information in each role found in one of the paths. For each role found in one of the paths, `ansibler` will look for a `meta/main.yml` file and extract the `role_name`, `namespace`, and `description`. The cache should then store the folder name = description. The idea of having a cache is to make the process FAST. It is common for the project to be able to live reload every 10s-20s. The cached map should be stored in `~/.local/megabytelabs/ansibler`. A typical `meta/main.yml` will look something like this:
-
-```
----
-galaxy_info:
-  role_name: snapd
-  author: professormanhattan
-  description: Ensures Snap is installed and properly configured on Linux
-  company: Megabyte Labs
-  license: license (MIT)
-  repository: https://gitlab.com/megabyte-labs/ansible-roles/snapd
-  repository_status: https://gitlab.com/megabyte-labs/ansible-roles/snapd/badges/master/pipeline.svg
-
-  min_ansible_version: 2.10
-
-  platforms:
-    - name: EL
-      versions:
-        - 7
-        - 8
-    - name: Fedora
-      versions:
-        - 33
-    - name: Ubuntu
-      versions:
-        - focal
-    - name: Debian
-      versions:
-        - all
-
-  galaxy_tags:
-    - snap
-    - snapd
-    - package
-    - installation
-    - software
-    - linux
-
-dependencies: []
-```
-
-3. Next, since the descriptions are available, Ansibler generates a piece of JSON that is compatible with `@appnest/readme` which can be used to display a chart detailing the dependencies of an Ansible role/playbook. It does this by looking at the `requirements.yml`. For each role under the roles section in `requirements.yml`, the cached map of values should be used to determine the `description`. A typical `requirements.yml` will look something like this:
-
-```
----
-roles:
-  - name: professormanhattan.snapd
-  - name: professormanhattan.homebrew
-collections:
-  - name: chocolatey.chocolatey
-    source: https://galaxy.ansible.com
-  - name: community.general
-    source: https://galaxy.ansible.com
-```
-
-4. For the `requirements.yml` file above, Ansibler should generate a JSON chart that looks something like this:
+Ansibler reads your dependencies from `requirements.yml` and then builds an additional depencency chart, which will be added under `role_dependencies` and will look something like the following:
 
 ```
 {
   "role_dependencies": [
     [
-      "Role Dependency",
+      "Dependency",
       "Description",
       "Supported OSes",
       "Status"
     ],
     [
-      "<a href=\"https://galaxy.ansible.com/professormanhattan/snapd\" title=\"professormanhattan.snapd on Ansible Galaxy\" target=\"_blank\">professormanhattan.snapd</a>",
+      "<b><a href=\"https://galaxy.ansible.com/professormanhattan/snapd\" title=\"professormanhattan.snapd on Ansible Galaxy\" target=\"_blank\">professormanhattan.snapd</a></b>",
       "Ensures Snap is installed and properly configured on Linux",
-      "<img src=\"https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/centos.png\" /><img src=\"https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/fedora.png\" /><img src=\"https://gitlab.com/megabyte-labs/assets/-/blob/master/icon/ubuntu.png\" /><img src=\"https://gitlab.com/megabyte-labs/assets/-/blob/master/icon/debian.png\" />",
-      "<a href=\"https://gitlab.com/megabyte-labs/ansible-roles/snapd\" title=\"professormanhattan.snapd's repository\" target=\"_blank\"><img src=\"https://gitlab.com/megabyte-labs/ansible-roles/snapd/badges/master/pipeline.svg\" /></a>"
+      "<a title=\"Windows 11 build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-snapd/actions/Windows.yml\" target=\"_blank\"><img alt=\"Windows 11 build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-snapd/Windows/master?color=cyan&label=Windows%20build&logo=windows&style=flat\"></a><a title=\"macOS build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-snapd/actions/macOS.yml\" target=\"_blank\"><img alt=\"macOS build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-androidstudio/macOS/master?label=macOS%20build&logo=apple&style=flat\"></a>"
     ],
     [
-      "<a href=\"https://galaxy.ansible.com/professormanhattan/homebrew\" title=\"professormanhattan.homebrew on Ansible Galaxy\" target=\"_blank\">professormanhattan.homebrew</a>",
+      "<b><a href=\"https://galaxy.ansible.com/professormanhattan/homebrew\" title=\"professormanhattan.homebrew on Ansible Galaxy\" target=\"_blank\">professormanhattan.homebrew</a></b>",
       "Installs Homebrew on nearly any OS",
       "For simplicity, this cell's data has not been added.",
-      "<a href=\"https://gitlab.com/megabyte-labs/ansible-roles/homebrew\" title=\"professormanhattan.homebrew's repository\" target=\"_blank\"><img src=\"https://gitlab.com/megabyte-labs/ansible-roles/homebrew/badges/master/pipeline.svg\" /></a>"
+      "<a title=\"Windows 11 build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-homebrew/actions/Windows.yml\" target=\"_blank\"><img alt=\"Windows 11 build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-homebrew/Windows/master?color=cyan&label=Windows%20build&logo=windows&style=flat\"></a><a title=\"macOS build status on GitHub\" href=\"https://gitlab.com/ProfessorManhattan/ansible-homebrew/actions/macOS.yml\" target=\"_blank\"><img alt=\"macOS build status\" src=\"https://img.shields.io/github/workflow/status/ProfessorManhattan/ansible-androidstudio/macOS/master?label=macOS%20build&logo=apple&style=flat\"></a>"
     ]
   ]
 }
 ```
 
-5. In the JSON above, you will see that the `Role Dependency` column uses a link in the form of `https://galaxy.ansible.com/{{ galaxy_info.namespace }}/{{ galaxy_info.role_name }}` with the text anchor as `{{ galaxy_info.namespace }}.{{ galaxy_info.role_name }}`. The description column is simply the text from `{{ galaxy_info.description }}`. The next column lists an array of icons that correlate to the operating systems that the role supports. These columns should be determined by looking at `{{ galaxy_info.platforms }}` (See the Icons section below for more details). Finally, the last `Status` column has a link in the form of `{{ galaxy_info.repository }}` and an image of `{{ galaxy_info.repository_status }}`. For the last column, if the `repository` field is unavailable then simply show the img. And if the `repository_status` is unavailable then replace the entire cell with 'Unavailable' text.
+_NOTE:_ the Status column gets generated by reading the `role_dependencies_status_format` field in `./variables.json` and then replacing all ocurrences of `role_name` with each dependency name.
 
-**The role_dependencies variable should be saved to `blueprint.role_dependencies` in package.json**
+You can also use a template file and populate it using an additional variables file - the two arguments for that:
 
-### Role Dependency Chart Icons
+- `--repository-status-template`: you can pass a filepath or a string.
+- `--variables`: JSON file that defines the variables. Any ocurrences of `variable` in the template will be replaced with the corresponding variable in this JSON file.
 
-The third column in the `role_dependencies` chart displays icons that correlate to the platforms that are supported by the role. These icons should be determined by looking at the `{{ galaxy_info.platforms }}` variable. If there is an entry that says `Fedora` then the Fedora icon should show up. If there is a platform that says EL (which stands for Enterprise Linux) then the CentOS icon should show up. Here are the icons/platform names:
+_TIP:_ You can also run `ansibler --role-dependencies` in your playbooks. Ansibler will attempt to read your roles path (using `ansible-dump`) and generate role dependencies for ALL your roles!
 
-* **Archlinux** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/archlinux.png
-* **EL** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/centos.png
-* **Debian** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/debian.png
-* **Fedora** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/fedora.png
-* **FreeBSD** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/freebsd.png
-* **MacOSX** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/macos.png
-* **Ubuntu** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/ubuntu.png
-* **Windows** - https://gitlab.com/megabyte-labs/assets/-/raw/master/icon/windows.png
+<a href="#additional-info" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
 
-### Additional Notes
+## Additional Info
 
-Although not shown in the example `role_dependencies` chart above, each icon in the `Supported OSes` column should link to `{{ galaxy_info.repository }}#supported-operating-systems`. All links should also include `target="_blank"`.
+### Caching
+
+Ansibler generates a cache file under `~/.local/megabytelabs/ansibler` - you can clear it with:
+
+```
+ansibler --clear-cache
+```
+
+### Overriding ansibler.json and meta/main.yml
+
+By default, Ansibler writes to (and reads from) `ansibler.json`. If you want to override this, add `--json-file` when you use Ansibler. For example:
+
+```
+ansibler --generate-compatibility-chart --json-file .example.json
+ansibler --populate-platforms --json-file .example.json
+ansibler --role-dependencies --json-file .example.json
+```
+
+### Help
+
+```
+ansibler --help
+```
+
+<a href="#installation" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Installation
+
+To accomodate everyone, this CLI can be installed using a variety of methods.
+
+### PyPi
+
+If you already have Python 3 and pip3 installed, you can install the CLI by running:
+
+```shell
+pip3 install {{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}
+```
+
+### Install Doctor
+
+On **macOS or Linux**, you can run:
+
+```shell
+bash -sS https://install.doctor/py/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}
+```
+
+And on **Windows**, you can run:
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://install.doctor/py/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}?os=win'))
+```
+
+### Homebrew
+
+If you have [Homebrew](https://brew.sh/) installed, you can install the package by running:
+
+```shell
+brew install installdoc/py/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}
+```
+
+Or if you prefer to keep Python off your system, and install a binary, you can run:
+
+```shell
+brew install installdoc/py/{{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}-binary
+```
+
+### Chocolatey
+
+If you are on Windows, you can install a binary version (without the Python dependency), using [Chocolatey](https://chocolatey.org/):
+
+```powershell
+choco install {{(if customPyPiPackageName customPyPiPackageName (append repository.prefix.github slug))}}
+```
+
+### Binary Releases
+
+There are also binaries (in various formats) available for download on both [GitHub](https://github.com/ProfessorManhattan/ansibler/releases) and [GitLab](https://gitlab.com/megabyte-labs/python/cli/ansibler/-/releases).
+
+<a href="#requirements" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Requirements
+
+To run this project, all you need is [Python 3](https://www.python.org/) and [pip3](https://pip.pypa.io/en/stable/). See the [Installation section](#installation) for instructions that include alternate installation methods that do not require Python to be installed.
+
+If you are interested in contributing or would like to make some modifications, please see the [CONTRIBUTING](/docs/CONTRIBUTING.md) guide. There are a handful of build tools we incorporate into the development process. All of them are installed automatically via our Taskfile system. You can get started customizing this project by running:
+
+```shell
+bash .config/scripts/start.sh
+task start
+task --list
+```
+
+<a href="#contributing" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/ProfessorManhattan/ansibler/issues). If you would like to contribute, please take a look at the [contributing guide](https://github.com/ProfessorManhattan/ansibler/blob/master/docs/CONTRIBUTING.md).
+
+<details>
+<summary><b>Sponsorship</b></summary>
+<br/>
+<blockquote>
+<br/>
+Dear Awesome Person,<br/><br/>
+I create open source projects out of love. Although I have a job, shelter, and as much fast food as I can handle, it would still be pretty cool to be appreciated by the community for something I have spent a lot of time and money on. Please consider sponsoring me! Who knows? Maybe I will be able to quit my job and publish open source full time.
+<br/><br/>Sincerely,<br/><br/>
+
+**_Brian Zalewski_**<br/><br/>
+
+</blockquote>
+
+<a title="Support us on Open Collective" href="https://opencollective.com/megabytelabs" target="_blank">
+  <img alt="Open Collective sponsors" src="https://img.shields.io/opencollective/sponsors/megabytelabs?logo=opencollective&label=OpenCollective&logoColor=white&style=for-the-badge" />
+</a>
+<a title="Support us on GitHub" href="https://github.com/ProfessorManhattan" target="_blank">
+  <img alt="GitHub sponsors" src="https://img.shields.io/github/sponsors/ProfessorManhattan?label=GitHub%20sponsors&logo=github&style=for-the-badge" />
+</a>
+<a href="https://www.patreon.com/ProfessorManhattan" title="Support us on Patreon" target="_blank">
+  <img alt="Patreon" src="https://img.shields.io/badge/Patreon-Support-052d49?logo=patreon&logoColor=white&style=for-the-badge" />
+</a>
+
+</details>
+
+<a href="#license" style="width:100%"><img style="width:100%" src="https://gitlab.com/megabyte-labs/assets/-/raw/master/png/aqua-divider.png" /></a>
+
+## License
+
+Copyright © 2020-2021 [Megabyte LLC](https://megabyte.space). This project is [MIT](https://gitlab.com/megabyte-labs/python/cli/ansibler/-/blob/master/LICENSE) licensed.

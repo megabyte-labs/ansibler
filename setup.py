@@ -1,34 +1,23 @@
 from setuptools import setup, find_packages
-from ansibler import __version__, name
-
-NAME = name
-REPO = name
-
-VERSION = __version__
-ARCHIVE = f"v_{'_'.join(VERSION.split('.'))}.tar.gz"
 
 setup(
-    name=NAME,
+    name="ansibler",
     packages=find_packages(),
-    version=VERSION,
     license="MIT",
-    description="Generate JSON data that describes the dependencies of an " \
-        "Ansible playbook/role. Also, automatically generate OS compatibil" \
-        "ity charts using Molecule.",
+    description="Generate JSON data that describes the dependencies of an "
+    "Ansible playbook/role. Also, automatically generate OS compatibil"
+    "ity charts using Molecule.",
     author="Renny Montero",
     author_email="rennym19@gmail.com",
-    url=f"https://gitlab.com/megabyte-labs/python/{REPO}/",
-    download_url=f"https://gitlab.com/megabyte-labs/python/{REPO}/archive/" \
-        f"{ARCHIVE}",
+    url=f"https://gitlab.com/megabyte-labs/python/cli/ansibler",
+    download_url=f"https://gitlab.com/megabyte-labs/python/{REPO}/archive/",
     keywords=["ANSIBLE", "DEPENDENCY", "ROLE", "MOLECULE", "CHARTS", "TEST"],
     install_requires=[
         "ruamel.yaml",
         "requests",
     ],
     include_package_data=True,
-    entry_points={
-        "console_scripts": [f"{NAME} = ansibler.run:main"]
-    },
+    entry_points={"console_scripts": [f"{NAME} = ansibler.run:main"]},
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

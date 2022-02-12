@@ -6,7 +6,7 @@ ARGS = [
     {
         "arg_name": "generate-compatibility-chart",
         "arg_help": "Generates compatibilty chart",
-        "arg_action": "store_true"
+        "arg_action": "store_true",
     },
     {
         "arg_name": "populate-platforms",
@@ -16,12 +16,12 @@ ARGS = [
     {
         "arg_name": "role-dependencies",
         "arg_help": "Role dependencies",
-        "arg_action": "store_true"
+        "arg_action": "store_true",
     },
     {
         "arg_name": "molecule-results-dir",
-        "arg_help": "Molecule results directory " \
-                    "(works for --generate-compatibility-chart only)"
+        "arg_help": "Molecule results directory "
+        "(works for --generate-compatibility-chart only)",
     },
     {
         "arg_name": "json-file",
@@ -33,20 +33,20 @@ ARGS = [
     },
     {
         "arg_name": "repository-status-template",
-        "arg_help": "Repo status template used in role dependencies - can be " \
-                    "a string or a valid file path"
+        "arg_help": "Repo status template used in role dependencies - can be "
+        "a string or a valid file path",
     },
     {
         "arg_name": "variables",
-        "arg_help": "Variables used to populate the repo status template. It " \
-                    "must be a valid JSON file path"
+        "arg_help": "Variables used to populate the repo status template. It "
+        "must be a valid JSON file path",
     },
     {
         "arg_name": "clear-cache",
         "arg_help": "Clears ansibler cache",
-        "arg_action": "store_true"
+        "arg_action": "store_true",
     },
-    { "arg_name": "version", "arg_help": "project version" },
+    {"arg_name": "version", "arg_help": "project version"},
 ]
 
 
@@ -80,19 +80,16 @@ def configure_parser() -> ArgumentParser:
                 f"--{arg.get('arg_name')}",
                 action="version",
                 version=f"{name} {__version__}",
-                help=arg.get("arg_help")
+                help=arg.get("arg_help"),
             )
         elif arg.get("arg_action", None) != None:
             parser.add_argument(
                 f"--{arg.get('arg_name')}",
                 action=arg.get("arg_action"),
-                help=arg.get("arg_help")
+                help=arg.get("arg_help"),
             )
         else:
-            parser.add_argument(
-                f"--{arg.get('arg_name')}",
-                help=arg.get("arg_help")
-            )
+            parser.add_argument(f"--{arg.get('arg_name')}", help=arg.get("arg_help"))
 
     return parser
 
@@ -136,6 +133,6 @@ def read_parser_args(parser) -> Dict[str, str]:
 
     # If --version is in arguments, make sure it's the only one
     if "version" in user_args.keys() and len(user_args) > 1:
-        raise ArgumentError("Invalid option: \"version\"")
+        raise ArgumentError('Invalid option: "version"')
 
     return user_args

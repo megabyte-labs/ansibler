@@ -3,9 +3,7 @@ from typing import Any, Dict, List, Optional
 from ansibler.utils.files import check_file_exists
 
 
-def parse_platform_map(
-    platform_map_file: Optional[str] = None
-) -> Dict[str, str]:
+def parse_platform_map(platform_map_file: Optional[str] = None) -> Dict[str, str]:
     # Check if valid file
     if not platform_map_file or not check_file_exists(platform_map_file):
         return {}
@@ -55,8 +53,7 @@ def map_to_galaxy_supported_platforms(
                 mapped_platforms[mapped_os] = current_versions
 
     return [
-        {"name": os, "versions": versions}
-        for os, versions in mapped_platforms.items()
+        {"name": os, "versions": versions} for os, versions in mapped_platforms.items()
     ]
 
 

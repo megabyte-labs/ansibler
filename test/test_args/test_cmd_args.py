@@ -10,7 +10,7 @@ class TestArguments(TestCase):
         {
             "arg_name": "generate-compatibility-chart",
             "arg_help": "help",
-            "arg_action": "store_true"
+            "arg_action": "store_true",
         },
         {
             "arg_name": "populate-platforms",
@@ -20,21 +20,19 @@ class TestArguments(TestCase):
         {
             "arg_name": "role-dependencies",
             "arg_help": "help",
-            "arg_action": "store_true"
+            "arg_action": "store_true",
         },
-        { "arg_name": "version", "arg_help": "help" },
+        {"arg_name": "version", "arg_help": "help"},
     ]
 
-    INVALID_ARGUMENTS = [
-        { "name": "invalid", "help": "invalid help" }
-    ]
+    INVALID_ARGUMENTS = [{"name": "invalid", "help": "invalid help"}]
 
     def setUp(self) -> None:
         """
         Test case setup
         """
         self.mock_valid_args = patch.object(
-            cmd, 'ARGS', return_value=self.VALID_ARGUMENTS
+            cmd, "ARGS", return_value=self.VALID_ARGUMENTS
         )
         with self.mock_valid_args:
             self.parser = configure_parser()

@@ -9,7 +9,9 @@ from ansibler.role_dependencies.role_info import get_role_name_from_req_file
 from ansibler.role_dependencies.galaxy import get_from_ansible_galaxy
 from ansibler.exceptions.ansibler import MetaYMLError, RolesParseError
 from ansibler.role_dependencies.cache import (
-    read_roles_metadata_from_cache, cache_roles_metadata, append_role_to_cache
+    read_roles_metadata_from_cache,
+    cache_roles_metadata,
+    append_role_to_cache,
 )
 from ansibler.utils.files import (
     check_folder_exists,
@@ -20,7 +22,7 @@ from ansibler.utils.files import (
     copy_file,
     check_file_exists,
     create_file_if_not_exists,
-    read_gitignore
+    read_gitignore,
 )
 
 
@@ -30,7 +32,7 @@ ROLES_PATTERN = r"\[.*\]"
 async def generate_role_dependency_chart(
     json_file: Optional[str] = "./ansibler.json",
     template: Optional[str] = None,
-    variables: Optional[str] = None
+    variables: Optional[str] = None,
 ) -> Coroutine[None, None, None]:
     """
     Generates role dependency charts. Uses caches whenever possible.
@@ -57,7 +59,8 @@ async def generate_role_dependency_chart(
 
         # Read gitignore
         files_to_ignore = read_gitignore(
-            pathlib.Path(role_path) / pathlib.Path(".gitignore"))
+            pathlib.Path(role_path) / pathlib.Path(".gitignore")
+        )
 
         # List ansible dirs
         if is_playbook:
@@ -93,7 +96,7 @@ async def generate_role_dependency_chart(
                         json_file=json_file,
                         role_paths=role_paths,
                         template=template,
-                        variables=variables
+                        variables=variables,
                     )
                 )
             )
@@ -154,7 +157,7 @@ def parse_default_roles(default_roles: str) -> List[str]:
 
     # Split by =
     config_key_value = default_roles.split("=")
-    
+
     if len(config_key_value) < 2:
         raise RolesParseError(f"Couldn't parse roles from: {default_roles}")
 
@@ -172,10 +175,12 @@ def is_ansible_dir(directory: str) -> bool:
     Returns:
         bool: whether an ansible playbook or role
     """
-    return any((
-        check_file_exists(directory + "meta/main.yml"),
-        check_folder_exists(directory + "molecule/")
-    ))
+    return any(
+        (
+            check_file_exists(directory + "meta/main.yml"),
+            check_folder_exists(directory + "molecule/"),
+        )
+    )
 
 
 async def generate_single_role_dependency_chart(
@@ -186,7 +191,7 @@ async def generate_single_role_dependency_chart(
     json_file: Optional[str] = "ansibler.json",
     role_paths: Optional[str] = [],
     template: Optional[str] = None,
-    variables: Optional[str] = None
+    variables: Optional[str] = None,
 ) -> Coroutine[None, None, None]:
     # TODO: TESTS
     try:
@@ -197,11 +202,10 @@ async def generate_single_role_dependency_chart(
             json_file=json_file,
             role_paths=role_paths,
             template=template,
-            variables=variables
+            variables=variables,
         )
     except (ValueError, MetaYMLError) as e:
-        print(
-            f"\tCouldnt generate dependency chart for {role_name}: {e}")
+        print(f"\tCouldnt generate dependency chart for {role_name}: {e}")
 
 
 async def role_dependency_chart(
@@ -211,7 +215,7 @@ async def role_dependency_chart(
     json_file: Optional[str] = "ansibler.json",
     role_paths: Optional[str] = [],
     template: Optional[str] = None,
-    variables: Optional[str] = None
+    variables: Optional[str] = None,
 ) -> Coroutine[None, None, None]:
     # TODO: TESTS
     # Get role's name
@@ -225,10 +229,12 @@ async def role_dependency_chart(
     dependencies = read_dependencies(requirement_file)
     # If there's at least one dependency, add headers
     if len(dependencies):
-        role_dependencies.append([
-            "Dependency",
-            "Description",
-        ])
+        role_dependencies.append(
+            [
+                "Dependency",
+                "Description",
+            ]
+        )
     else:
         print(f"\tNo dependencies found in {role_name}")
 
@@ -247,10 +253,7 @@ async def role_dependency_chart(
                 print(f"\tDoing full re-scan...")
                 new_cache = cache_roles_metadata(role_paths, cache)
                 return await role_dependency_chart(
-                    requirement_file,
-                    role_base_path,
-                    new_cache,
-                    json_file=json_file
+                    requirement_file, role_base_path, new_cache, json_file=json_file
                 )
 
             print(f"\tReading dependency {dep} from ansible-galaxy")
@@ -345,12 +348,15 @@ def get_role_dependency_link(metadata: Dict[str, Any]) -> str:
 
     if not namespace or not role_name:
         raise ValueError(
-            f"Can not generate dependency link for {namespace}.{role_name}")
-    
-    return f"<b>" \
-           f"<a href=\"https://galaxy.ansible.com/{namespace}/{role_name}\" " \
-           f"title=\"{namespace}.{role_name} on Ansible Galaxy\" target=\"_" \
-           f"blank\">{namespace}.{role_name}</a></b>"
+            f"Can not generate dependency link for {namespace}.{role_name}"
+        )
+
+    return (
+        f"<b>"
+        f'<a href="https://galaxy.ansible.com/{namespace}/{role_name}" '
+        f'title="{namespace}.{role_name} on Ansible Galaxy" target="_'
+        f'blank">{namespace}.{role_name}</a></b>'
+    )
 
 
 def get_role_dependency_description(metadata: Dict[str, Any]) -> str:
