@@ -39,13 +39,19 @@ def map_to_galaxy_supported_platforms(
                 value = platform_map.get(key, key).split("-", 1)
 
                 # New values
-                mapped_os, mapped_release  = value[0], value[1]
+                mapped_os = map_os_name(value[0])
+                mapped_release = map_os_version(mapped_os, value[1])
+
+                # If release is None, skip
+                if mapped_release is None:
+                    continue
 
                 # Append to mapped platforms
                 current_versions = mapped_platforms.get(mapped_os, [])
+                mapped_release = get_formatted_version(mapped_release)
                 if mapped_release not in current_versions:
-                    current_versions.append(
-                        get_formatted_version(mapped_release))
+                    current_versions.append(mapped_release)
+
                 mapped_platforms[mapped_os] = current_versions
 
     return [
@@ -54,7 +60,7 @@ def map_to_galaxy_supported_platforms(
     ]
 
 
-def get_formatted_version(version: str):
+def get_formatted_version(version: str) -> Any:
     try:
         if "." not in version:
             return int(version)
@@ -65,3 +71,30 @@ def get_formatted_version(version: str):
             return int(version)
     except:
         return version
+
+
+def map_os_name(os_name: str) -> str:
+    if not os_name:
+        return os_name
+
+    if os_name.lower() == "centos":
+        return "EL"
+
+    return os_name
+
+
+def map_os_version(os_name: str, os_version: str) -> str:
+    # ubuntu, debian, el, fedora can not have "all" as version
+    if (
+        os_name.lower() in ["ubuntu", "debian", "el", "centos", "fedora"]
+        and os_version == "all"
+    ):
+        return None
+
+    if not os_name:
+        return os_version
+
+    if os_name.lower() in ["archlinux", "windows", "macos"]:
+        return "all"
+
+    return os_version
