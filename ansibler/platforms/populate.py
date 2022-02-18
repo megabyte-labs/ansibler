@@ -118,8 +118,13 @@ def merge_platforms(
                 for current_platform in res:
                     cur_name = current_platform.get("name")
                     if cur_name == name:
-                        cur_versions = current_platform.get("versions", [])
-                        cur_versions.append(get_formatted_os_version(name, version))
+                        cur_versions = [
+                            get_formatted_os_version(name, v)
+                            for v in current_platform.get("versions", [])
+                        ]
+
+                        cur_versions.append(
+                            get_formatted_os_version(name, version))
                         supported.append(os)
                         added = True
 
