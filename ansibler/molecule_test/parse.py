@@ -1,4 +1,5 @@
 import re
+import sys
 from typing import Any, Dict, List, Optional, Tuple
 from ansibler.exceptions.ansibler import MoleculeTestParseError
 
@@ -50,6 +51,10 @@ def parse_test(test: str) -> Dict[str, Any]:
         test, scan_for="\n\n", start_from=converge_recap_start
     )
 
+    if converge_recap_start is None or converge_recap_end is None:
+        print("Could not parse molecule test")
+        sys.exit(1)
+
     # Extract section
     parsed_test["converge"] = {
         "play_recap": parse_play_recap(test[converge_recap_start:converge_recap_end])
@@ -94,10 +99,11 @@ def scan_molecule_results(
 
     # Search for pattern
     m = re.search(scan_for, results_substr)
-    if m:
-        return m.start() + start_from
 
-    return None
+    if m is None or start_from is None:
+        return None
+
+    return m.start() + start_from
 
 
 def parse_play_name(play_dump: str) -> str:
