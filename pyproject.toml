@@ -123,6 +123,9 @@ semantic = [
   "wheel"
 ]
 
+[tool.poetry.scripts]
+run = "ansibler.run:main"
+
 [tool.poetry.urls]
 "Bug Tracker" = "https://gitlab.com/megabyte-labs/python/cli/ansibler/-/issues"
 GitHub = "https://github.com/ProfessorManhattan/ansibler"
