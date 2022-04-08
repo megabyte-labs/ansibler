@@ -63,25 +63,25 @@ readme = "README.md"
 version = "0.2.4"
 
 [tool.poetry.dependencies]
-aiohttp = { version = "^3.7.4", optional = true }
-arrow = { version = "^1.1.1", optional = true }
-better-exceptions = { version = "^0.3.3", optional = true }
-celery = { version = "^5.1.2", optional = true }
-click = { version = "^8.0.3", optional = true }
-fire = { version = "^0.4.0", optional = true }
+aiohttp = { version = "^3.7.4"}
+arrow = { version = "^1.1.1" }
+better-exceptions = { version = "^0.3.3" }
+celery = { version = "^5.1.2" }
+click = { version = "^8.0.3" }
+fire = { version = "^0.4.0"}
 furl = { version = "^2.1.2", optional = true }
-pip = { version = "^21.3.0", optional = true }
+pip = { version = "^21.3.0"}
 python = ">=3.10.0,<3.11"
-requests = { version = "^2.26.0", optional = true }
+requests = { version = "^2.26.0"}
 rich = { version = "^10.9.0", optional = true }
-schedule = { version = "^1.1.0", optional = true }
-schema = { version = "^0.7.4", optional = true }
-setuptools = { version = "^58.2.0", optional = true }
-sh = { version = "^1.14.2", optional = true }
+schedule = { version = "^1.1.0"}
+schema = { version = "^0.7.4" }
+setuptools = { version = "^58.2.0" }
+sh = { version = "^1.14.2"}
 sphinx = { version = "^4.1.2", optional = true }
 sphinx-press-theme = { version = "^0.8.0", optional = true }
 twine = { version = "^3.8.0", optional = true }
-wheel = { version = "^0.37.1", optional = true }
+wheel = { version = "^0.37.1" }
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.0"
@@ -124,7 +124,7 @@ semantic = [
 ]
 
 [tool.poetry.scripts]
-run = "ansibler.run:main"
+ansibler = "ansibler.run:main"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://gitlab.com/megabyte-labs/python/cli/ansibler/-/issues"
