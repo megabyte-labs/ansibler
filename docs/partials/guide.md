@@ -97,5 +97,3 @@ ansibler --role-dependencies --json-file .example.json
 ### Help
 
 ```
-ansibler --help
-```
