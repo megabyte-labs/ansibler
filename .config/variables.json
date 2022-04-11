@@ -14,6 +14,7 @@
   "commit_help_url": "https://megabyte.space/docs/contributing/commit-guidelines",
   "company": "Megabyte LLC",
   "copyright": "2020-2021",
+  "dockerPublish": true,
   "docker_label_authors": "Brian Zalewski <brian@megabyte.space>",
   "docs": {
     "header_description_post": "<i></i>",
@@ -70,6 +71,7 @@
   "link": {
     "chat": "https://app.slack.com/client/T01ABCG4NK1/C01NN74H0LW/details/",
     "docs": "https://megabyte.space/docs",
+    "gitter": "https://gitter.im/megabyte-labs/community",
     "home": "https://megabyte.space",
     "installdoctor": "https://install.doctor",
     "privacy": "https://megabyte.space/privacy",
@@ -199,6 +201,7 @@
     "dockerhub": "megabytelabs",
     "galaxy": "professormanhattan",
     "github": "ProfessorManhattan",
+    "githubOrg": "megabyte-labs",
     "linkedin": "blzalewski",
     "npmjs": "thisismyfirstday",
     "npmjs_organization": "mblabs",
